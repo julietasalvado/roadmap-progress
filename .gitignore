@@ -21,3 +21,24 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+# ide
+*.iml
+.idea
+target
+bower_components
+node_modules
+node
+*.log
+asciidoctor.css
+README.html
+built
+dump.rdb
+package-lock.json
+.classpath
+.project
+org.eclipse.*
+settings.json
+.mvn
+mvnw
+mvnw.cmd
