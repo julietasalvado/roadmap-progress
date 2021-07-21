@@ -13,20 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.greglturnquist.payroll;
+package com.julietasalvado.roadmapprogress;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
 
-/**
- * @author Greg Turnquist
- */
 // tag::code[]
-@SpringBootApplication
-public class ReactAndSpringDataRestApplication {
+@Component
+public class DatabaseLoader implements CommandLineRunner {
 
-	public static void main(String[] args) {
-		SpringApplication.run(ReactAndSpringDataRestApplication.class, args);
+	private final BookRepository repository;
+
+	@Autowired
+	public DatabaseLoader(BookRepository repository) {
+		this.repository = repository;
+	}
+
+	@Override
+	public void run(String... strings) throws Exception {
+		this.repository.save(new Book("Frodo", "Baggins"));
 	}
 }
 // end::code[]
