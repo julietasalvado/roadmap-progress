@@ -1,48 +1,47 @@
 'use strict';
 
 // tag::vars[]
-const React = require('react'); // <1>
-const ReactDOM = require('react-dom'); // <2>
-const client = require('./client'); // <3>
+const React = require('react');
+const ReactDOM = require('react-dom');
+const client = require('./client');
 // end::vars[]
 
 // tag::app[]
-class App extends React.Component { // <1>
+class App extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {employees: []};
+		this.state = {books: []};
 	}
 
-	componentDidMount() { // <2>
-		client({method: 'GET', path: '/api/employees'}).done(response => {
-			this.setState({employees: response.entity._embedded.employees});
+	componentDidMount() {
+		client({method: 'GET', path: '/api/books'}).done(response => {
+			this.setState({books: response.entity._embedded.books});
 		});
 	}
 
-	render() { // <3>
+	render() {
 		return (
-			<EmployeeList employees={this.state.employees}/>
+			<BookList books={this.state.books}/>
 		)
 	}
 }
 // end::app[]
 
-// tag::employee-list[]
-class EmployeeList extends React.Component{
+// tag::book-list[]
+class BookList extends React.Component{
 	render() {
-		const employees = this.props.employees.map(employee =>
-			<Employee key={employee._links.self.href} employee={employee}/>
+		const books = this.props.books.map(book =>
+			<Book key={book._links.self.href} book={book}/>
 		);
 		return (
 			<table>
 				<tbody>
 					<tr>
-						<th>First Name</th>
-						<th>Last Name</th>
-						<th>Description</th>
+						<th>Title</th>
+						<th>Cover URL</th>
 					</tr>
-					{employees}
+					{books}
 				</tbody>
 			</table>
 		)
@@ -51,13 +50,12 @@ class EmployeeList extends React.Component{
 // end::employee-list[]
 
 // tag::employee[]
-class Employee extends React.Component{
+class Book extends React.Component{
 	render() {
 		return (
 			<tr>
-				<td>{this.props.employee.firstName}</td>
-				<td>{this.props.employee.lastName}</td>
-				<td>{this.props.employee.description}</td>
+				<td>{this.props.book.title}</td>
+				<td>{this.props.book.coverUrl}</td>
 			</tr>
 		)
 	}
