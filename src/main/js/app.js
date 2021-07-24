@@ -1,5 +1,7 @@
 'use strict';
 
+import {Card, CardGroup, Container, Grid, Image, Segment} from 'semantic-ui-react'
+
 // tag::vars[]
 const React = require('react');
 const ReactDOM = require('react-dom');
@@ -31,36 +33,35 @@ class App extends React.Component {
 // tag::book-list[]
 class BookList extends React.Component{
 	render() {
-		const books = this.props.books.map(book =>
+		/*const books = this.props.books.map(book =>
 			<Book key={book._links.self.href} book={book}/>
+		);*/
+
+		const booksCards = this.props.books.map(book =>
+
+				<Card>
+					<Image src={book.coverUrl} wrapped ui={false} />
+					<Card.Content>
+						<Card.Header>{book.title}</Card.Header>
+					</Card.Content>
+				</Card>
 		);
 		return (
-			<table>
-				<tbody>
-					<tr>
-						<th>Title</th>
-						<th>Cover URL</th>
-					</tr>
-					{books}
-				</tbody>
-			</table>
+			<Container>
+				<Segment style={{ padding: '8em 0em' }} vertical>
+					<Grid.Row textAlign='center'>
+						<Grid.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
+							<CardGroup>
+								{booksCards}
+							</CardGroup>
+						</Grid.Column>
+					</Grid.Row>
+				</Segment>
+			</Container>
 		)
 	}
 }
-// end::employee-list[]
-
-// tag::employee[]
-class Book extends React.Component{
-	render() {
-		return (
-			<tr>
-				<td>{this.props.book.title}</td>
-				<td>{this.props.book.coverUrl}</td>
-			</tr>
-		)
-	}
-}
-// end::employee[]
+// end::book-list[]
 
 // tag::render[]
 ReactDOM.render(
