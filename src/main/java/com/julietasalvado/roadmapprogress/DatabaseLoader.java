@@ -32,9 +32,19 @@ public class DatabaseLoader implements CommandLineRunner {
 
 	@Override
 	public void run(String... strings) throws Exception {
-		this.repository.save(new Book("Make It Stick: The Science of Successful Learning", "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1436742344l/18770267._SY475_.jpg"));
-		this.repository.save(new Book("How to Take Smart Notes", "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1488937626l/34507927._SY475_.jpg"));
-		this.repository.save(new Book("Ultralearning", "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1554211384l/44770129._SY475_.jpg"));
+		this.repository.save(Book.builder()
+						.title("Make It Stick: The Science of Successful Learning")
+						.coverUrl("https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1436742344l/18770267._SY475_.jpg")
+						.build());
+		this.repository.save(Book.builder()
+						.title("How to Take Smart Notes")
+						.coverUrl("https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1488937626l/34507927._SY475_.jpg")
+						.build());
+		this.repository.save(Book.builder()
+						.title("Ultralearning")
+						.coverUrl("https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1554211384l/44770129._SY475_.jpg")
+						.build()
+	);
 	}
 }
 // end::code[]

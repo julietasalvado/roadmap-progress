@@ -15,73 +15,25 @@
  */
 package com.julietasalvado.roadmapprogress;
 
-import java.util.Objects;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 // tag::code[]
-@Entity // <1>
+@Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Data
 public class Book {
 
 	private @Id @GeneratedValue Long id;
 	private String title;
 	private String coverUrl;
-
-	private Book() {}
-
-	public Book(String title, String coverUrl) {
-		this.title = title;
-		this.coverUrl = coverUrl;
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		Book book = (Book) o;
-		return Objects.equals(id, book.id) &&
-			Objects.equals(title, book.title);
-	}
-
-	@Override
-	public int hashCode() {
-
-		return Objects.hash(id, title, coverUrl);
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	public String getCoverUrl() {
-		return coverUrl;
-	}
-
-	public void setCoverUrl(String coverUrl) {
-		this.coverUrl = coverUrl;
-	}
-
-	@Override
-	public String toString() {
-		return "Book{" +
-			"id=" + id +
-			", title='" + title + '\'' +
-			", coverUrl='" + coverUrl + '\'' +
-			'}';
-	}
 }
 // end::code[]
