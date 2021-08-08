@@ -33,5 +33,6 @@ public class Book {
 	private @Id String id;
 	private String title;
 	private String coverUrl;
+	private boolean starred = false;
 }
 // end::code[]

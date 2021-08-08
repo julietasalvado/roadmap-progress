@@ -4,7 +4,7 @@ import {Card, CardGroup, Grid, Image} from "semantic-ui-react";
 class BookLayout extends Component {
     render() {
         const booksCards = this.props.books.map(book =>
-            <Card>
+            <Card color={book.starred ? 'pink' : 'grey'}>
                 <Image src={book.coverUrl} wrapped ui={false} />
                 <Card.Content>
                     <Card.Header>{book.title}</Card.Header>
