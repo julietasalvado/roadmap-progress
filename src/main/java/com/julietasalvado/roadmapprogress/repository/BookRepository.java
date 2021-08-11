@@ -13,12 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.julietasalvado.roadmapprogress;
+package com.julietasalvado.roadmapprogress.repository;
 
-import org.springframework.data.repository.CrudRepository;
+import com.julietasalvado.roadmapprogress.Book;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
+
 
 // tag::code[]
-public interface BookRepository extends CrudRepository<Book, Long> {
+@Repository
+public interface BookRepository extends MongoRepository<Book, String> {
 
 }
 // end::code[]
