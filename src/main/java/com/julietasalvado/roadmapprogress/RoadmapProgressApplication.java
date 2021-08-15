@@ -17,14 +17,13 @@ package com.julietasalvado.roadmapprogress;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
 
 // tag::code[]
 @SpringBootApplication
-public class ReactAndSpringDataRestApplication {
+public class RoadmapProgressApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ReactAndSpringDataRestApplication.class, args);
+		SpringApplication.run(RoadmapProgressApplication.class, args);
 	}
 }
 // end::code[]
