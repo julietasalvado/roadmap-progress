@@ -1,6 +1,6 @@
 'use strict';
 
-import {Container, Segment} from 'semantic-ui-react'
+import {Icon, Segment, Sidebar, Menu, Grid} from 'semantic-ui-react'
 import BookLayout from "./components/BookLayout";
 
 // tag::vars[]
@@ -25,11 +25,32 @@ class App extends React.Component {
 
 	render() {
 		return (
-			<Container>
-				<Segment style={{padding: '8em 0em'}} vertical>
-					<BookLayout books={this.state.books}/>
-				</Segment>
-			</Container>
+				<Grid columns={1}>
+					<Grid.Column>
+						<Sidebar.Pushable as={Segment}>
+							<Sidebar
+								as={Menu}
+								animation='slide along'
+								icon='labeled'
+								inverted
+								vertical
+								visible='true'
+								width='thin'
+							>
+								<Menu.Item as='a'>
+									<Icon name='book' />
+									Books
+								</Menu.Item>
+							</Sidebar>
+
+							<Sidebar.Pusher>
+								<Segment style={{padding: '8em 3em'}} vertical>
+									<BookLayout books={this.state.books}/>
+								</Segment>
+							</Sidebar.Pusher>
+						</Sidebar.Pushable>
+					</Grid.Column>
+				</Grid>
 		)
 	}
 }
