@@ -14,7 +14,10 @@ class App extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {books: []};
+		this.state = {
+			books: [],
+			activeItem: "books"};
+		this.handleItemClick = this.handleItemClick.bind(this);
 	}
 
 	componentDidMount() {
@@ -23,7 +26,14 @@ class App extends React.Component {
 		});
 	}
 
+	handleItemClick (e, name) {
+		this.setState({ activeItem: name })
+	}
+
 	render() {
+		const activeItem = this.state.activeItem
+		console.log(activeItem)
+
 		return (
 				<Grid columns={1}>
 					<Grid.Column>
@@ -37,7 +47,10 @@ class App extends React.Component {
 								visible='true'
 								width='thin'
 							>
-								<Menu.Item as='a'>
+								<Menu.Item as='a'
+										   active={activeItem === 'books'}
+										   onClick={(e) => this.handleItemClick(e,'books')}
+								>
 									<Icon name='book' />
 									Books
 								</Menu.Item>
