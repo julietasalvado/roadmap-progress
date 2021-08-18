@@ -19,18 +19,26 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 // tag::code[]
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Data
-@Document(collection = "books")
+@Entity
+@Table(name = "books")
 public class Book {
 
-	private @Id String id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
+
 	private String title;
 	private String coverUrl;
 	private boolean starred = false;
