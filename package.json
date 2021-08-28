@@ -1,10 +1,10 @@
 {
-  "name": "spring-data-rest-and-reactjs",
+  "name": "roadmap-progress",
   "version": "0.1.0",
-  "description": "Demo of ReactJS + Spring Data REST",
+  "description": "Display and keep progress on a roadmap",
   "repository": {
     "type": "git",
-    "url": "git@github.com:spring-guides/tut-react-and-spring-data-rest.git"
+    "url": "git@github.com:julietasalvado/roadmap-progress.git"
   },
   "keywords": [
     "rest",
@@ -13,12 +13,12 @@
     "data",
     "react"
   ],
-  "author": "Greg L. Turnquist",
+  "author": "Julieta Salvadó",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/spring-guides/tut-react-and-spring-data-rest/issues"
+    "url": "https://github.com/julietasalvado/roadmap-progress/issues"
   },
-  "homepage": "https://github.com/spring-guides/tut-react-and-spring-data-rest",
+  "homepage": "https://roadmap-progress.herokuapp.com",
   "dependencies": {
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
