@@ -1,0 +1,15 @@
+### GET a book
+GET http://localhost:8080/api/books?id=2
+Accept: application/json
+
+### GET all books
+GET http://localhost:8080/api/books
+Accept: application/json
+
+### GET all books' first page
+GET http://localhost:8080/api/books?size=2
+Accept: application/json
+
+### GET all books' metadata
+GET http://localhost:8080/api/profile/books
+Accept: application/json
