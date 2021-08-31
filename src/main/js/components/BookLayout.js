@@ -1,5 +1,5 @@
 import React, {Component} from "react"
-import {Card, CardGroup, Grid, Image} from "semantic-ui-react";
+import {Card, CardGroup, Grid, Icon, Image} from "semantic-ui-react";
 
 class BookLayout extends Component {
     render() {
@@ -8,6 +8,12 @@ class BookLayout extends Component {
                 <Image src={book.coverUrl} wrapped ui={false} />
                 <Card.Content>
                     <Card.Header>{book.title}</Card.Header>
+                </Card.Content>
+                <Card.Content extra data-testid="progresssection">
+                    <a>
+                        <Icon name='book' data-testid="progress-icon"/>
+                        {book.progress} %
+                    </a>
                 </Card.Content>
             </Card>
         );

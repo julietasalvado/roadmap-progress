@@ -42,5 +42,6 @@ public class Book {
 	private String title;
 	private String coverUrl;
 	private boolean starred = false;
+	private int progress;
 }
 // end::code[]
