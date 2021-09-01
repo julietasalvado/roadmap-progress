@@ -1,5 +1,6 @@
 import React, {Component} from "react"
-import {Card, CardGroup, Grid, Icon, Image} from "semantic-ui-react";
+import {Card, CardGroup, Grid, Image} from "semantic-ui-react";
+import {BookProgress} from "./BookProgress";
 
 class BookLayout extends Component {
     render() {
@@ -9,12 +10,7 @@ class BookLayout extends Component {
                 <Card.Content>
                     <Card.Header>{book.title}</Card.Header>
                 </Card.Content>
-                <Card.Content extra data-testid="progresssection">
-                    <a>
-                        <Icon name='book' data-testid="progress-icon"/>
-                        {book.progress} %
-                    </a>
-                </Card.Content>
+                <BookProgress book={book}/>
             </Card>
         );
 
