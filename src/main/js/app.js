@@ -44,7 +44,7 @@ class App extends React.Component {
 								icon='labeled'
 								inverted
 								vertical
-								visible='true'
+								visible={true}
 								width='thin'
 							>
 								<Menu.Item as='a'
