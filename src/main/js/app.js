@@ -32,7 +32,13 @@ class App extends React.Component {
 
 	render() {
 		const activeItem = this.state.activeItem
-		console.log(activeItem)
+		const mainContent = (activeItem === 'books'
+			? <Segment style={{padding: '8em 3em'}} vertical>
+				<BookLayout books={this.state.books}/>
+			</Segment>
+			: <Segment style={{padding: '8em 3em'}} vertical>
+				<Icon name='map' />
+			</Segment>)
 
 		return (
 				<Grid columns={1}>
@@ -54,12 +60,17 @@ class App extends React.Component {
 									<Icon name='book' />
 									Books
 								</Menu.Item>
+								<Menu.Item as='a'
+										   active={activeItem === 'roadmaps'}
+										   onClick={(e) => this.handleItemClick(e,'roadmaps')}
+								>
+									<Icon name='map' />
+									Roadmaps
+								</Menu.Item>
 							</Sidebar>
 
 							<Sidebar.Pusher>
-								<Segment style={{padding: '8em 3em'}} vertical>
-									<BookLayout books={this.state.books}/>
-								</Segment>
+								{mainContent}
 							</Sidebar.Pusher>
 						</Sidebar.Pushable>
 					</Grid.Column>
