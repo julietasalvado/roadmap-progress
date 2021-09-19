@@ -61,7 +61,7 @@ class App extends Component {
 			? <Segment style={{padding: '8em 3em'}} vertical>
 				<BookLayout books={this.state.books}/>
 			</Segment>
-			: <Segment style={{padding: '3em 3em'}} vertical>
+			: <Segment vertical>
 				<RoadmapLayout />
 			</Segment>)
 
