@@ -1,7 +1,7 @@
-'use strict';
-
 import {Icon, Segment, Sidebar, Menu, Grid} from 'semantic-ui-react'
 import BookLayout from "./components/BookLayout";
+import RoadmapLayout from "./components/RoadmapLayout";
+import {Component} from "react";
 
 // tag::vars[]
 const React = require('react');
@@ -12,8 +12,7 @@ const root = '/api';
 // end::vars[]
 
 // tag::app[]
-class App extends React.Component {
-
+class App extends Component {
 
 	constructor(props) {
 		super(props);
@@ -62,14 +61,14 @@ class App extends React.Component {
 			? <Segment style={{padding: '8em 3em'}} vertical>
 				<BookLayout books={this.state.books}/>
 			</Segment>
-			: <Segment style={{padding: '8em 3em'}} vertical>
-				<Icon name='map' />
+			: <Segment style={{padding: '3em 3em'}} vertical>
+				<RoadmapLayout />
 			</Segment>)
 
 		return (
 				<Grid columns={1}>
 					<Grid.Column>
-						<Sidebar.Pushable as={Segment}>
+						<Sidebar.Pushable>
 							<Sidebar
 								as={Menu}
 								animation='slide along'
@@ -96,7 +95,10 @@ class App extends React.Component {
 							</Sidebar>
 
 							<Sidebar.Pusher>
+								<Segment
+										 textAlign='center'>
 								{mainContent}
+								</Segment>
 							</Sidebar.Pusher>
 						</Sidebar.Pushable>
 					</Grid.Column>
