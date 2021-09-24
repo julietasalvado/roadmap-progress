@@ -95,10 +95,12 @@ class App extends Component {
 							</Sidebar>
 
 							<Sidebar.Pusher>
-								<Segment
-										 textAlign='center'>
-								{mainContent}
-								</Segment>
+								<div style={{
+									height: "100vh",
+									overflow: "auto"
+								}}>
+									{mainContent}
+								</div>
 							</Sidebar.Pusher>
 						</Sidebar.Pushable>
 					</Grid.Column>
