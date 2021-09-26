@@ -24,7 +24,13 @@ class RoadmapLayout extends Component {
         ];
         return <div style={{
             height: "100vh",
-            overflow: "auto"
+            overflow: "auto",
+            backgroundColor: "#f5f5f5",
+            backgroundSize: "50px 50px",
+            backgroundImage: "linear-gradient(90deg, #eaeaea 1px, transparent 0), linear-gradient(180deg, #eaeaea 1px, transparent 0)",
+            backgroundPosition: "right -109px bottom -39px",
+            transform: "scale(1)",
+            zIndex: "-10000"
         }}>
             <Canvas
                         direction="DOWN"
