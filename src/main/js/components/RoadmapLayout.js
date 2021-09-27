@@ -9,7 +9,8 @@ class RoadmapLayout extends Component {
                 height: 100,
                 width: 250,
                 data: {
-                    type: "start"
+                    type: "start",
+                    title: "Java Roadmap"
                 }
             },
             {
@@ -18,7 +19,8 @@ class RoadmapLayout extends Component {
                 width: 250,
                 data: {
                     value: 25,
-                    type: "main-topic"
+                    type: "main-topic",
+                    title: "Frameworks"
                 }
             }
         ];
@@ -48,7 +50,7 @@ class RoadmapLayout extends Component {
                                     <foreignObject height={event.height} width={event.width} x={0} y={0}>
                                         { event.node.data.type === "main-topic" &&
                                         <div style={{ padding: 10, textAlign: 'center' }}>
-                                            <h3 style={{ color: 'white' }}>Progress</h3>
+                                            <h3 style={{ color: 'white' }}>{event.node.data.title}</h3>
                                             <input type="range" min="1" max="100" value={event.node.data.value} />
                                         </div>
                                         }
@@ -58,7 +60,7 @@ class RoadmapLayout extends Component {
                                             textAlign: 'center',
                                             borderRadius: "5px 5px 0px 0px"
                                         }}>
-                                            <h3 style={{ color: 'white' }}>Java Roadmap</h3>
+                                            <h3 style={{ color: 'white' }}>{event.node.data.title}</h3>
                                         </div>
                                         }
                                     </foreignObject>
