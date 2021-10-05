@@ -65,6 +65,28 @@ class App extends Component {
 				<RoadmapLayout />
 			</Segment>)
 
+		const additionalMenu = (activeItem === 'books'
+			? <Menu.Item as='a'
+						 style={{
+							 position: "absolute",
+							 bottom: "0",
+							 paddingLeft: "40px"
+						 }}
+			>
+				<Icon name='save' />
+				Menu
+			</Menu.Item>
+			: <Menu.Item as='a'
+						   style={{
+							   position: "absolute",
+							   bottom: "0",
+							   paddingLeft: "40px"
+						   }}
+				>
+					<Icon name='car' />
+					Roadmap Menu
+				</Menu.Item>)
+
 		return (
 				<Grid columns={1}>
 					<Grid.Column>
@@ -92,6 +114,7 @@ class App extends Component {
 									<Icon name='map' />
 									Roadmaps
 								</Menu.Item>
+								{additionalMenu}
 							</Sidebar>
 
 							<Sidebar.Pusher>
