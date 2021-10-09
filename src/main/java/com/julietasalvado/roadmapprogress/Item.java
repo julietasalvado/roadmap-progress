@@ -32,8 +32,8 @@ import javax.persistence.Table;
 @Builder
 @Data
 @Entity
-@Table(name = "books")
-public class Book {
+@Table(name = "items")
+public class Item {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
