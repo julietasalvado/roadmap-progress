@@ -1,4 +1,4 @@
-import {Icon, Segment, Sidebar, Menu, Grid} from 'semantic-ui-react'
+import {Icon, Segment, Sidebar, Menu, Grid, Input} from 'semantic-ui-react'
 import BookLayout from "./components/BookLayout";
 import RoadmapLayout from "./components/RoadmapLayout";
 import {Component} from "react";
@@ -76,16 +76,31 @@ class App extends Component {
 				<Icon name='save' />
 				Menu
 			</Menu.Item>
-			: <Menu.Item as='a'
+			: <div
 						   style={{
 							   position: "absolute",
 							   bottom: "0",
 							   paddingLeft: "40px"
 						   }}
 				>
-					<Icon name='car' />
-					Roadmap Menu
-				</Menu.Item>)
+				<div style={{padding: "10px 10px 10px 10px"}}>
+					<Input
+						label={{ icon: 'sitemap' }}
+						labelPosition='left corner'
+						placeholder='Create new Roadmap...'
+					/>
+				</div>
+				<div style={{padding: "10px 10px 10px 10px"}}>
+					<Input list='languages'
+						   placeholder='Open a Roadmap...'
+						   label={{ icon: 'folder open' }}
+						   labelPosition='left corner'/>
+						<datalist id='languages'>
+							<option value='Leadership'>Leadership</option>
+							<option value='Java Developer'>Java Developer</option>
+						</datalist>
+				</div>
+				</div>)
 
 		return (
 				<Grid columns={1}>
@@ -98,13 +113,13 @@ class App extends Component {
 								inverted
 								vertical
 								visible={true}
-								width='thin'
+								width='wide'
 							>
 								<Menu.Item as='a'
 										   active={activeItem === 'books'}
 										   onClick={(e) => this.handleItemClick(e,'books')}
 								>
-									<Icon name='book' />
+									<Icon name='book' size='huge'/>
 									Books
 								</Menu.Item>
 								<Menu.Item as='a'
