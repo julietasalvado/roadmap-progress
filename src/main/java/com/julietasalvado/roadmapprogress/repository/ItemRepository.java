@@ -15,14 +15,14 @@
  */
 package com.julietasalvado.roadmapprogress.repository;
 
-import com.julietasalvado.roadmapprogress.Book;
+import com.julietasalvado.roadmapprogress.Item;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 
 // tag::code[]
 @Repository
-public interface BookRepository extends PagingAndSortingRepository<Book, Long> {
+public interface ItemRepository extends PagingAndSortingRepository<Item, Long> {
 
 }
 // end::code[]

@@ -32,8 +32,9 @@ class App extends Component {
 
 	loadFromServer(pageSize) {
 		follow(client, root, [
-			{rel: 'books', params: {size: pageSize}}]
+			{rel: 'items', params: {size: pageSize}}]
 		).then(booksCollection => {
+			console.log(booksCollection)
 			return client({
 				method: 'GET',
 				path: booksCollection.entity._links.profile.href,
@@ -44,7 +45,7 @@ class App extends Component {
 			});
 		}).done(booksCollection => {
 			this.setState({
-				books: booksCollection.entity._embedded.books,
+				books: booksCollection.entity._embedded.items,
 				attributes: Object.keys(this.schema.properties),
 				pageSize: pageSize,
 				links: booksCollection.entity._links});
