@@ -1,0 +1,1 @@
+ALTER TABLE public.books ADD progress int4 NOT NULL DEFAULT 0;
