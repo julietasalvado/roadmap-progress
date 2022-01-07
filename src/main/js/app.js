@@ -84,13 +84,16 @@ class App extends Component {
 							   paddingLeft: "40px"
 						   }}
 				>
-				<div style={{padding: "10px 10px 10px 10px"}}>
-					<Input
-						label={{ icon: 'sitemap' }}
-						labelPosition='left corner'
-						placeholder='Create new Roadmap...'
-					/>
-				</div>
+				<Input
+					action={{
+						color: 'teal',
+						labelPosition: 'left',
+						icon: 'sitemap',
+						content: 'Create',
+					}}
+					actionPosition='left'
+					placeholder='Roadmap Name....'
+				/>
 				<div style={{padding: "10px 10px 10px 10px"}}>
 					<Input list='languages'
 						   placeholder='Open a Roadmap...'
