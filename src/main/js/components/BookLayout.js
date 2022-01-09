@@ -1,8 +1,17 @@
 import React, {Component} from "react"
-import {Card, CardGroup, Grid, Image} from "semantic-ui-react";
+import {Card, CardGroup, Grid, Image, Label} from "semantic-ui-react";
 import {BookProgress} from "./BookProgress";
 
 class BookLayout extends Component {
+
+    getTopics(book) {
+        return book.topics.length > 0 && book.topics.map(topic =>
+                <Label as='a' tag>
+                    {topic.title}
+                </Label>
+            )
+    }
+
     render() {
         const booksCards = this.props.books.map(book =>
             <Card color={book.starred ? 'pink' : 'grey'}>
@@ -11,6 +20,9 @@ class BookLayout extends Component {
                     <Card.Header>{book.title}</Card.Header>
                 </Card.Content>
                 <BookProgress book={book}/>
+                <div>
+                    {this.getTopics(book)}
+                </div>
             </Card>
         );
 
