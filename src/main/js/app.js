@@ -2,6 +2,7 @@ import {Icon, Segment, Sidebar, Menu, Grid, Input} from 'semantic-ui-react'
 import BookLayout from "./components/BookLayout";
 import RoadmapLayout from "./components/RoadmapLayout";
 import {Component} from "react";
+import 'regenerator-runtime/runtime'
 
 // tag::vars[]
 const React = require('react');
@@ -34,7 +35,6 @@ class App extends Component {
 		follow(client, root, [
 			{rel: 'items', params: {size: pageSize}}]
 		).then(booksCollection => {
-			console.log(booksCollection)
 			return client({
 				method: 'GET',
 				path: booksCollection.entity._links.profile.href,
