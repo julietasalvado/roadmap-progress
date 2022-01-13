@@ -1,13 +1,13 @@
 import React from "react"
 import {render} from "@testing-library/react";
-import BookLayout from "./BookLayout";
+import ItemLayout from "./BookLayout";
 
 let container = null
 
-BookLayout.defaultProps = { books: [] }
+ItemLayout.defaultProps = { books: [] }
 
 beforeEach(() => {
-    container = render(<BookLayout/>).container
+    container = render(<ItemLayout/>).container
 })
 
 it('should show card group', () => {
