@@ -1,7 +1,10 @@
 var path = require('path');
 
 module.exports = {
-    entry: './src/main/js/app.js',
+    entry: [
+        './node_modules/regenerator-runtime/runtime.js',
+        './src/main/js/app.js'
+    ],
     devtool: 'sourcemaps',
     cache: true,
     mode: 'development',

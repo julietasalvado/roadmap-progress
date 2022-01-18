@@ -1,14 +1,12 @@
 import {Icon, Segment, Sidebar, Menu, Grid, Input} from 'semantic-ui-react'
-import BookLayout from "./components/BookLayout";
+import ItemLayout from "./components/ItemLayout";
 import RoadmapLayout from "./components/RoadmapLayout";
 import {Component} from "react";
+import 'regenerator-runtime/runtime'
 
 // tag::vars[]
 const React = require('react');
 const ReactDOM = require('react-dom');
-const client = require('./client');
-const follow = require('./follow'); // function to hop multiple links by "rel"
-const root = '/api';
 // end::vars[]
 
 // tag::app[]
@@ -17,39 +15,9 @@ class App extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			books: [],
-			activeItem: "books",
-			attributes: [],
-			pageSize: 8,
-			links: {}
+			activeItem: "books"
 		};
 		this.handleItemClick = this.handleItemClick.bind(this);
-	}
-
-	componentDidMount() {
-		this.loadFromServer(this.state.pageSize);
-	}
-
-	loadFromServer(pageSize) {
-		follow(client, root, [
-			{rel: 'items', params: {size: pageSize}}]
-		).then(booksCollection => {
-			console.log(booksCollection)
-			return client({
-				method: 'GET',
-				path: booksCollection.entity._links.profile.href,
-				headers: {'Accept': 'application/schema+json'}
-			}).then(schema => {
-				this.schema = schema.entity;
-				return booksCollection;
-			});
-		}).done(booksCollection => {
-			this.setState({
-				books: booksCollection.entity._embedded.items,
-				attributes: Object.keys(this.schema.properties),
-				pageSize: pageSize,
-				links: booksCollection.entity._links});
-		});
 	}
 
 	handleItemClick (e, name) {
@@ -60,7 +28,7 @@ class App extends Component {
 		const activeItem = this.state.activeItem
 		const mainContent = (activeItem === 'books'
 			? <Segment style={{padding: '8em 3em'}} vertical>
-				<BookLayout books={this.state.books}/>
+				<ItemLayout />
 			</Segment>
 			: <Segment vertical>
 				<RoadmapLayout />
