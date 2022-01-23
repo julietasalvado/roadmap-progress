@@ -18,15 +18,19 @@ class App extends Component {
 			activeItem: "books",
 			roadmapList: [],
 			attributes: [],
-			links: {}
+			links: {},
+			activeRoadmap: null
 		};
 		this.handleItemClick = this.handleItemClick.bind(this)
 		this.getRoadmapList = this.getRoadmapList.bind(this);
+		this.handleOpenRoadmap = this.handleOpenRoadmap.bind(this);
 	}
 
 	handleItemClick (e, name) {
 		this.setState({ activeItem: name })
 	}
+
+	handleOpenRoadmap = (e, { value }) => this.setState({ activeRoadmap: value })
 
 	getRoadmapList() {
 		const follow = require('./follow'); // function to hop multiple links by "rel"
@@ -60,7 +64,7 @@ class App extends Component {
 				<ItemLayout />
 			</Segment>
 			: <Segment vertical>
-				<RoadmapLayout />
+				<RoadmapLayout roadmap={this.state.roadmapList.find(roadmap => roadmap.name === this.state.activeRoadmap)}/>
 			</Segment>)
 
 		const additionalMenu = (activeItem === 'books'
@@ -95,7 +99,9 @@ class App extends Component {
 					<Input list='languages'
 						   placeholder='Open a Roadmap...'
 						   label={{ icon: 'folder open' }}
-						   labelPosition='left corner'/>
+						   labelPosition='left corner'
+						   onChange={this.handleOpenRoadmap}
+					/>
 						<datalist id='languages'>
 							{ this.state.roadmapList.map( roadmap => { return <option value={roadmap.name}>{roadmap.name}</option> })}
 						</datalist>
