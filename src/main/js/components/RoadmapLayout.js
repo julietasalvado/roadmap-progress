@@ -2,40 +2,30 @@ import React from "react"
 import {Canvas, Node} from "reaflow";
 
 function RoadmapLayout (props) {
-    const edges = !(props.roadmap == null)  && props.roadmap.edges.map( edge => {
-        return ({
-            id: edge.id,
-            from: edge.edgeFrom,
-            to: edge.edgeTo
-        })
-    })
-
-    const nodes = [
-        {
-            id: '1',
-            height: 100,
-            width: 250,
-            data: {
-                type: "start",
-                title: "Java Roadmap"
-            }
-        },
-        {
-            id: '2',
-            height: 125,
-            width: 250,
-            data: {
-                value: 25,
-                type: "main-topic",
-                title: "Frameworks"
-            }
-        }
-    ];
-
     if (props.roadmap == null)
         return <div/>
     else {
+        const edges =  props.roadmap.edges.map( edge => {
+            return ({
+                id: edge.id,
+                from: edge.edgeFrom,
+                to: edge.edgeTo
+            })
+        })
 
+        const nodes = props.roadmap.nodes.map( node => {
+            return ({
+                id: node.id,
+                height: node.height,
+                width: node.width,
+                data: {
+                    type: node.type,
+                    title: node.title
+                }
+            })
+        })
+
+        console.log(props.roadmap)
         return <div style={{
             height: "100vh",
             overflow: "auto",
@@ -54,13 +44,13 @@ function RoadmapLayout (props) {
                     <Node>
                         {event => (
                             <foreignObject height={event.height} width={event.width} x={0} y={0}>
-                                {event.node.data.type === "main-topic" &&
+                                {event.node.data.type === "MAIN_TOPIC" &&
                                 <div style={{padding: 10, textAlign: 'center'}}>
                                     <h3 style={{color: 'white'}}>{event.node.data.title}</h3>
                                     <input type="range" min="1" max="100" value={event.node.data.value}/>
                                 </div>
                                 }
-                                {event.node.data.type === "start" &&
+                                {event.node.data.type === "START" &&
                                 <div style={{
                                     padding: 10,
                                     textAlign: 'center',

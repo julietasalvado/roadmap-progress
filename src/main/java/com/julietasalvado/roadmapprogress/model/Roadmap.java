@@ -34,6 +34,10 @@ public class Roadmap {
 
   @OneToMany(mappedBy = "roadmap", fetch = FetchType.LAZY,
           cascade = CascadeType.ALL)
+  private List<Node> nodes;
+
+  @OneToMany(mappedBy = "roadmap", fetch = FetchType.LAZY,
+          cascade = CascadeType.ALL)
   private List<Edge> edges;
 
   public Roadmap(String name) {
