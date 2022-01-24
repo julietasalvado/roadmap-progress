@@ -15,16 +15,45 @@ class App extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			activeItem: "books"
+			activeItem: "books",
+			roadmapList: [],
+			attributes: [],
+			links: {}
 		};
-		this.handleItemClick = this.handleItemClick.bind(this);
+		this.handleItemClick = this.handleItemClick.bind(this)
+		this.getRoadmapList = this.getRoadmapList.bind(this);
 	}
 
 	handleItemClick (e, name) {
 		this.setState({ activeItem: name })
 	}
 
+	getRoadmapList() {
+		const follow = require('./follow'); // function to hop multiple links by "rel"
+		const root = '/api';
+		const client = require('./client');
+
+		follow(client, root, [{rel: 'roadmaps', params: {size: 8}}]
+		).then(roadmapCollection => {
+			return client({
+				method: 'GET',
+				path: roadmapCollection.entity._links.profile.href,
+				headers: {'Accept': 'application/schema+json'}
+			}).then(schema => {
+				this.schema = schema.entity;
+				return roadmapCollection;
+			});
+		}).done(roadmapCollection => {
+			this.setState({
+				roadmapList: roadmapCollection.entity._embedded.roadmaps,
+				attributes: Object.keys(this.schema.properties),
+				links: roadmapCollection.entity._links});
+		});
+	}
+
 	render() {
+		this.getRoadmapList()
+
 		const activeItem = this.state.activeItem
 		const mainContent = (activeItem === 'books'
 			? <Segment style={{padding: '8em 3em'}} vertical>
@@ -68,8 +97,7 @@ class App extends Component {
 						   label={{ icon: 'folder open' }}
 						   labelPosition='left corner'/>
 						<datalist id='languages'>
-							<option value='Leadership'>Leadership</option>
-							<option value='Java Developer'>Java Developer</option>
+							{ this.state.roadmapList.map( roadmap => { return <option value={roadmap.name}>{roadmap.name}</option> })}
 						</datalist>
 				</div>
 				</div>)
