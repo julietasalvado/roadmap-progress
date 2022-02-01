@@ -62,7 +62,7 @@ export default function ItemLayout (props) {
             return follow(client, root, [
                 {rel: 'items', params: {'size': pageSize}}]);
         }).done(response => {
-            //reload
+            loadFromServer()
         });
     }
 
@@ -112,7 +112,7 @@ export default function ItemLayout (props) {
         }
     }
 
-    const loadFromServer = (pageSize) => {
+    const loadFromServer = () => {
         const follow = require('./../follow'); // function to hop multiple links by "rel"
         const root = '/api';
         const client = require('./../client');
