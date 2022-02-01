@@ -1,3 +1,7 @@
 ### GET all roadmaps
 GET http://localhost:8080/api/roadmaps
 Accept: application/json
+
+### GET one roadmap
+GET http://localhost:8080/api/roadmaps/1
+Accept: application/json
