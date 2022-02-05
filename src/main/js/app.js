@@ -1,7 +1,7 @@
 import {Icon, Segment, Sidebar, Menu, Grid, Input, Dropdown, Button, Header} from 'semantic-ui-react'
 import ItemLayout from "./components/ItemLayout";
 import RoadmapLayout from "./components/RoadmapLayout";
-import {Component} from "react";
+import {useEffect, useState} from "react";
 import 'regenerator-runtime/runtime'
 
 // tag::vars[]
@@ -10,39 +10,28 @@ const ReactDOM = require('react-dom');
 // end::vars[]
 
 // tag::app[]
-class App extends Component {
+export default function App (props) {
+	const [activeItem, setActiveItem] = useState("books")
+	const [roadmapList, setRoadmapList] = useState([])
+	const [attributes, setAttributes] = useState([])
+	const [links, setLinks] = useState({})
+	const [activeRoadmap, setActiveRoadmap] = useState(null)
+	const [isbn, setIsbn] = useState("")
+	const [submittedIsbn, setSubmittedIsbn] = useState("")
+	const [schema, setSchema] = useState()
 
-	constructor(props) {
-		super(props);
-		this.state = {
-			activeItem: "books",
-			roadmapList: [],
-			attributes: [],
-			links: {},
-			activeRoadmap: null,
-			isbn: "",
-			submittedIsbn: ""
-		};
-		this.handleItemClick = this.handleItemClick.bind(this)
-		this.getRoadmapList = this.getRoadmapList.bind(this);
-		this.handleOpenRoadmap = this.handleOpenRoadmap.bind(this);
+	const handleItemClick = (e, name) => setActiveItem(name)
+
+	const handleOpenRoadmap = (e, { value }) => setActiveRoadmap(value)
+	
+	const handleAddNewItemChange = (e, { name, value }) => {
+		// TODO this.setState({ [name]: value }) -> antes de migrar a hooks
+		//{{`set${name}`}(value)}
 	}
 
-	handleItemClick (e, name) {
-		this.setState({ activeItem: name })
-	}
+	const handleAddNewItemSubmit = () => setSubmittedIsbn(isbn)
 
-	handleOpenRoadmap = (e, { value }) => this.setState({ activeRoadmap: value })
-
-	handleAddNewItemChange = (e, { name, value }) => {
-		this.setState({ [name]: value })}
-
-	handleAddNewItemSubmit = () => {
-		const { isbn } = this.state
-		this.setState({ submittedIsbn: isbn })
-	}
-
-	getRoadmapList() {
+	const getRoadmapList = () => {
 		const follow = require('./follow'); // function to hop multiple links by "rel"
 		const root = '/api';
 		const client = require('./client');
@@ -54,27 +43,22 @@ class App extends Component {
 				path: roadmapCollection.entity._links.profile.href,
 				headers: {'Accept': 'application/schema+json'}
 			}).then(schema => {
-				this.schema = schema.entity;
+				setSchema(schema.entity);
 				return roadmapCollection;
 			});
 		}).done(roadmapCollection => {
-			this.setState({
-				roadmapList: roadmapCollection.entity._embedded.roadmaps,
-				attributes: Object.keys(this.schema.properties),
-				links: roadmapCollection.entity._links});
-		});
+			setRoadmapList(roadmapCollection.entity._embedded.roadmaps)
+			setAttributes(Object.keys(schema?.properties))
+			setLinks(roadmapCollection.entity._links)
+		})
 	}
 
-	render() {
-		this.getRoadmapList()
-
-		const { activeItem, isbn, submittedIsbn } = this.state
 		const mainContent = (activeItem === 'books'
 			? <Segment style={{padding: '8em 3em'}} vertical>
 				<ItemLayout newItem={submittedIsbn} />
 			</Segment>
 			: <Segment vertical>
-				<RoadmapLayout roadmap={this.state.roadmapList.find(roadmap => roadmap.name === this.state.activeRoadmap)}/>
+				<RoadmapLayout roadmap={roadmapList.find(roadmap => roadmap.name === activeRoadmap)}/>
 			</Segment>)
 
 		const options = [
@@ -102,11 +86,11 @@ class App extends Component {
 					size='mini'
 					value={isbn}
 					name="isbn"
-					onChange={this.handleAddNewItemChange}
+					onChange={handleAddNewItemChange}
 				>
 					<input size='tiny'/>
 					<Dropdown selection fluid options={options} defaultValue='ISBN' size='mini' />
-					<Button type='submit' value={isbn} name="isbn" onClick={this.handleAddNewItemSubmit} size='small'> + </Button>
+					<Button type='submit' value={isbn} name="isbn" onClick={handleAddNewItemSubmit} size='small'> + </Button>
 				</Input>
 			</Menu.Item>
 			: <div
@@ -131,13 +115,18 @@ class App extends Component {
 						   placeholder='Open a Roadmap...'
 						   label={{ icon: 'folder open' }}
 						   labelPosition='left corner'
-						   onChange={this.handleOpenRoadmap}
+						   onChange={handleOpenRoadmap}
 					/>
 						<datalist id='languages'>
-							{ this.state.roadmapList.map( roadmap => { return <option value={roadmap.name}>{roadmap.name}</option> })}
+							{ roadmapList.map( roadmap => { return <option value={roadmap.name}>{roadmap.name}</option> })}
 						</datalist>
 				</div>
 				</div>)
+
+	useEffect(() => {
+		if(activeItem === "roadmaps")
+			getRoadmapList()
+	}, [activeItem]);
 
 		return (
 				<Grid columns={1}>
@@ -154,14 +143,14 @@ class App extends Component {
 							>
 								<Menu.Item as='a'
 										   active={activeItem === 'books'}
-										   onClick={(e) => this.handleItemClick(e,'books')}
+										   onClick={(e) => handleItemClick(e,'books')}
 								>
 									<Icon name='book' size='huge'/>
 									Books
 								</Menu.Item>
 								<Menu.Item as='a'
 										   active={activeItem === 'roadmaps'}
-										   onClick={(e) => this.handleItemClick(e,'roadmaps')}
+										   onClick={(e) => handleItemClick(e,'roadmaps')}
 								>
 									<Icon name='map' />
 									Roadmaps
@@ -181,7 +170,6 @@ class App extends Component {
 					</Grid.Column>
 				</Grid>
 		)
-	}
 }
 // end::app[]
 
