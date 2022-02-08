@@ -1,4 +1,4 @@
-import {Icon, Segment, Sidebar, Menu, Grid, Input} from 'semantic-ui-react'
+import {Icon, Segment, Sidebar, Menu, Grid, Input, Dropdown, Button, Header} from 'semantic-ui-react'
 import ItemLayout from "./components/ItemLayout";
 import RoadmapLayout from "./components/RoadmapLayout";
 import {Component} from "react";
@@ -19,7 +19,9 @@ class App extends Component {
 			roadmapList: [],
 			attributes: [],
 			links: {},
-			activeRoadmap: null
+			activeRoadmap: null,
+			isbn: "",
+			submittedIsbn: ""
 		};
 		this.handleItemClick = this.handleItemClick.bind(this)
 		this.getRoadmapList = this.getRoadmapList.bind(this);
@@ -31,6 +33,14 @@ class App extends Component {
 	}
 
 	handleOpenRoadmap = (e, { value }) => this.setState({ activeRoadmap: value })
+
+	handleAddNewItemChange = (e, { name, value }) => {
+		this.setState({ [name]: value })}
+
+	handleAddNewItemSubmit = () => {
+		const { isbn } = this.state
+		this.setState({ submittedIsbn: isbn })
+	}
 
 	getRoadmapList() {
 		const follow = require('./follow'); // function to hop multiple links by "rel"
@@ -58,15 +68,25 @@ class App extends Component {
 	render() {
 		this.getRoadmapList()
 
-		const activeItem = this.state.activeItem
+		const { activeItem, isbn, submittedIsbn } = this.state
 		const mainContent = (activeItem === 'books'
 			? <Segment style={{padding: '8em 3em'}} vertical>
-				<ItemLayout />
+				<ItemLayout newItem={submittedIsbn} />
 			</Segment>
 			: <Segment vertical>
 				<RoadmapLayout roadmap={this.state.roadmapList.find(roadmap => roadmap.name === this.state.activeRoadmap)}/>
 			</Segment>)
 
+		const options = [
+			{
+				key: 1,
+				text: 'ISBN',
+				value: 1,
+				content: (
+					<Header icon='book' content='ISBN' subheader='Add a book' />
+				),
+			}
+		]
 		const additionalMenu = (activeItem === 'books'
 			? <Menu.Item as='a'
 						 style={{
@@ -75,8 +95,19 @@ class App extends Component {
 							 paddingLeft: "40px"
 						 }}
 			>
-				<Icon name='save' />
-				Menu
+				<Input
+					type='text'
+					placeholder='Add a new item...'
+					action
+					size='mini'
+					value={isbn}
+					name="isbn"
+					onChange={this.handleAddNewItemChange}
+				>
+					<input size='tiny'/>
+					<Dropdown selection fluid options={options} defaultValue='ISBN' size='mini' />
+					<Button type='submit' value={isbn} name="isbn" onClick={this.handleAddNewItemSubmit} size='small'> + </Button>
+				</Input>
 			</Menu.Item>
 			: <div
 						   style={{

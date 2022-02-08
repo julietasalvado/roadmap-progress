@@ -1,6 +1,9 @@
 import React, {useEffect, useRef, useState} from "react"
 import {Card, CardGroup, Grid, Image, Label} from "semantic-ui-react";
 import {BookProgress} from "./BookProgress";
+import {Item} from "./Item";
+import follow from "./../follow"
+import client from "./../client"
 
 function useDidMount() {
     const didMountRef = useRef(true);
@@ -9,7 +12,32 @@ function useDidMount() {
         didMountRef.current = false;
     }, []);
     return didMountRef.current;
-};
+}
+
+const getBookDetails = async (isbn) => {
+    // Query the book database by ISBN code.
+    const response = await fetch(
+        'https://www.googleapis.com/books/v1/volumes?q=isbn:' + isbn
+    )
+    const results = await response.json();
+
+    if (results.totalItems) {
+        // There'll be only 1 book per ISBN
+        const book = results.items[0];
+
+        const title = book['volumeInfo']['title'];
+        //const subtitle = book['volumeInfo']['subtitle'];
+        //const authors = book['volumeInfo']['authors'];
+        //const printType = book['volumeInfo']['printType'];
+        //const pageCount = book['volumeInfo']['pageCount'];
+        //const publisher = book['volumeInfo']['publisher'];
+        //const publishedDate = book['volumeInfo']['publishedDate'];
+        //const webReaderLink = book['accessInfo']['webReaderLink'];
+
+        const coverUrl = `https://covers.openlibrary.org/b/ISBN/${isbn}-M.jpg`
+        return Item(title, coverUrl)
+    }
+}
 
 export default function ItemLayout (props) {
     const [items, setItems] = useState([])
@@ -20,6 +48,23 @@ export default function ItemLayout (props) {
     const [filteredData, setFilteredData] = useState()
     const [error, setError] = useState()
     const [schema, setSchema] = useState()
+
+    const root = '/api';
+    const onCreate = (item) => {
+        follow(client, root, ['items']).then(itemsCollection => {
+            return client({
+                method: 'POST',
+                path: itemsCollection.entity._links.self.href,
+                entity: item,
+                headers: {'Content-Type': 'application/json'}
+            })
+        }).then(response => {
+            return follow(client, root, [
+                {rel: 'items', params: {'size': pageSize}}]);
+        }).done(response => {
+            loadFromServer()
+        });
+    }
 
     const getTopics = (book) => {
         return book.topics.length > 0 && book.topics.map(topic =>
@@ -67,7 +112,7 @@ export default function ItemLayout (props) {
         }
     }
 
-    const loadFromServer = (pageSize) => {
+    const loadFromServer = () => {
         const follow = require('./../follow'); // function to hop multiple links by "rel"
         const root = '/api';
         const client = require('./../client');
@@ -102,6 +147,13 @@ export default function ItemLayout (props) {
         loadAsyncData().then(filteredData =>
             setFilteredData(filteredData));
     }, [items, filterBy]);
+
+    useEffect(() => {
+        if (!(props.newItem === ""))
+            getBookDetails(props.newItem).then( item => {
+                onCreate(item)
+            })
+    }, [props.newItem]);
 
     if(error) return (<p>Something went wrong</p>);
     else return <div>
