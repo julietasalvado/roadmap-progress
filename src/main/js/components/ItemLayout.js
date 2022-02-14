@@ -1,18 +1,10 @@
-import React, {useEffect, useRef, useState} from "react"
+import React, {useEffect, useState} from "react"
 import {Card, CardGroup, Grid, Image, Label} from "semantic-ui-react";
 import {BookProgress} from "./BookProgress";
 import {Item} from "./Item";
 import follow from "./../follow"
 import client from "./../client"
-
-function useDidMount() {
-    const didMountRef = useRef(true);
-
-    useEffect(() => {
-        didMountRef.current = false;
-    }, []);
-    return didMountRef.current;
-}
+import useDidMount from "../api/useDidMount";
 
 const getBookDetails = async (isbn) => {
     // Query the book database by ISBN code.
