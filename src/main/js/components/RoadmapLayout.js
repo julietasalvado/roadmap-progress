@@ -29,12 +29,50 @@ export default function RoadmapLayout (props) {
             })}))
     }
 
+    const findNode = (nodeId) => {
+        return nodes != null && nodes.find((node) => nodeId === node.id)
+    }
+
+    const createEdge = (parentId, childrenId) => {
+        return ({
+            id: parentId + '-' + childrenId,
+            from: parentId,
+            to: childrenId
+        })
+    }
+
+    const createNode = (id, title) => {
+        return ({
+            id: id,
+            height: 25,
+            width: 25,
+            data: {
+                type: "PLUS",
+                title: title
+            }
+        })
+    }
+
     const {selections, onClick} = useSelection({
             nodes,
             edges,
             selections: ['1'],
             onSelection: (s) => {
-                console.log('Selection', s);
+                if (s.length === 1 && !s[0].endsWith('+')) {
+                    // Delete temporary node if only one node is selected
+                    const nodeToDelete = nodes.filter(node => node.data.type === "PLUS")
+                    let tempEdges = edges
+                    if (nodeToDelete.length > 0) {
+                        tempEdges = tempEdges.filter(edge => edge.to !== nodeToDelete[0].id)
+                    }
+                    const tempNodes = nodes.filter(node => node !== nodeToDelete[0])
+
+                    // Add a button as a temporary node if only one node is selected
+                    const node = findNode(s[0])
+                    const newNodeId = node.id + '+'
+                    setNodes(tempNodes.concat(createNode(newNodeId, "+")))
+                    setEdges(tempEdges.concat(createEdge(node.id, newNodeId)))
+                }
             }
         });
 
@@ -90,6 +128,12 @@ export default function RoadmapLayout (props) {
                                     }}>
                                         <h3 style={{color: 'white'}}>{event.node.data.title}</h3>
                                     </div>
+                                    }
+                                    {event.node.data.type === "PLUS" &&
+                                        <div style={{textAlign: 'center', backgroundColor: "#8b9395", border: "none"}}>
+                                        <h3 style={{color: 'dark grey'}}>{event.node.data.title}</h3>
+                                        </div>
+                                    }
                                     }
                                 </foreignObject>
                             )}
