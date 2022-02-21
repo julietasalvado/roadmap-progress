@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react"
-import {Canvas, Node, useSelection} from "reaflow";
+import {Canvas, Node, useSelection, addNodeAndEdge, getParentsForNodeId} from "reaflow";
 import useDidMount from "../api/useDidMount";
 import BlockPickerMenu from "./BlockPickerMenu";
 import {translateXYToCanvasPosition} from "../api/TranslateXYToCanvasPosition";
@@ -10,7 +10,27 @@ export default function RoadmapLayout (props) {
     const [blockPickerMenu, setBlockPickerMenu] = useState({
         isDisplayed: false,
         left: 0,
-        top: 0})
+        top: 0,
+        displayedFrom: null
+    })
+
+    const onCreationConfirmation = (e, displayedFrom) => {
+        // Send new node to the backend
+        if (e.key === "Enter") {
+            const parentEdge = findEdgesToNode(displayedFrom.id);
+
+            // Create edge & node
+            const newNode = createNormalNode(nodes.length + 1, e.target.value)
+            const newEdge = createEdge(parentEdge[0].from, newNode.id)
+
+            setNodes(nodes.concat(newNode));
+            setEdges(edges.concat(newEdge));
+
+            // Remove the plus node
+
+            // Send them to the backend
+        }
+    }
 
     const loadEdges = () => {
         setEdges(props.roadmap.edges.map(edge => {
@@ -51,13 +71,21 @@ export default function RoadmapLayout (props) {
         })
     }
 
-    const createNode = (id, title) => {
+    const createNormalNode = (id, title) => {
+        return createNode(id, title, 'MAIN_TOPIC', 125, 250)
+    }
+
+    const createPlusNode = (id) => {
+        return createNode(id, '+', 'PLUS', 25, 25)
+    }
+
+    const createNode = (id, title, type, height, width) => {
         return ({
             id: id,
-            height: 25,
-            width: 25,
+            height: height,
+            width: width,
             data: {
-                type: "PLUS",
+                type: type,
                 title: title
             }
         })
@@ -97,7 +125,7 @@ export default function RoadmapLayout (props) {
                 transform: "scale(1)",
                 zIndex: "-10000"
             }}>
-                <BlockPickerMenu data={blockPickerMenu}/>
+                <BlockPickerMenu data={blockPickerMenu} onConfirmation={onCreationConfirmation}/>
                 <Canvas
                     direction="DOWN"
                     nodes={nodes}
@@ -131,7 +159,7 @@ export default function RoadmapLayout (props) {
                                                 tempNodes = nodes.filter(node => node !== nodeToDelete[0])
                                             }
                                             // Adds a button with a plus symbol as a temporary node
-                                            tempNodes = tempNodes.concat(createNode(newNodeId, "+"))
+                                            tempNodes = tempNodes.concat(createPlusNode(newNodeId))
 
                                             // Adds an edge from the selected node to the new plus node
                                             tempEdges = tempEdges.concat(createEdge(selectedNode.id, newNodeId))
@@ -159,6 +187,7 @@ export default function RoadmapLayout (props) {
                                             // Depending on the position of the canvas, you might need to deduce from x/y some delta
                                             left: x,
                                             top: y,
+                                            displayedFrom: selectedNode
                                         });
                                     }
                         }}>

@@ -39,7 +39,11 @@ export default function BlockPickerMenu(props) {
               `}
     >
         <div className={'blocks-picker'} >
-            <Input focus placeholder='Node name...' />
+            <Input
+                focus
+                placeholder='Node name...'
+                onKeyPress={(e) => props.onConfirmation(e, props.data.displayedFrom)}
+            />
         </div>
     </div>);
 }
