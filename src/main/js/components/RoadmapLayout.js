@@ -1,18 +1,14 @@
 import React, {useEffect, useState} from "react"
-import {Canvas, Node, useSelection, addNodeAndEdge, getParentsForNodeId} from "reaflow";
+import {Canvas, Node, useSelection} from "reaflow";
 import useDidMount from "../api/useDidMount";
 import BlockPickerMenu from "./BlockPickerMenu";
 import {translateXYToCanvasPosition} from "../api/TranslateXYToCanvasPosition";
-import follow from "./../follow";
 import client from "./../client";
 
 export default function RoadmapLayout (props) {
     const [nodes, setNodes] = useState([])
     const [edges, setEdges] = useState([])
     const [roadmap, setRoadmap] = useState([])
-    const [attributes, setAttributes] = useState([])
-    const [links, setLinks] = useState({})
-    const [schema, setSchema] = useState()
     const [blockPickerMenu, setBlockPickerMenu] = useState({
         isDisplayed: false,
         left: 0,
@@ -41,7 +37,6 @@ export default function RoadmapLayout (props) {
             })})
     }
 
-    const root = '/api';
     const onCreationConfirmation = (e, displayedFrom) => {
         // Send new node to the backend
         if (e.key === "Enter") {
@@ -50,16 +45,21 @@ export default function RoadmapLayout (props) {
             // Create edge & node
             const newNode = createNormalNode(nodes.length, e.target.value)
             const newEdge = createEdge(parentEdge[0].from, newNode.id)
+            let tempNodes = nodes.concat(newNode)
+            let tempEdges = edges.concat(newEdge)
 
-            setEdges(nodes.concat(newNode))
-            setNodes(edges.concat(newEdge))
+            // Remove the plus node & edge
+            tempEdges = tempEdges.filter(edge => edge !== parentEdge[0])
+            tempNodes = tempNodes.filter(node => node.id !== displayedFrom.id)
 
+            setNodes(tempNodes);
+            setEdges(tempEdges);
+
+            // Update roadmap element
             const tempRoadmap = roadmap
-            tempRoadmap.nodes = convertNodes(nodes.concat(newNode))
-            tempRoadmap.edges = convertEdges(edges.concat(newEdge))
+            tempRoadmap.nodes = convertNodes(tempNodes)
+            tempRoadmap.edges = convertEdges(tempEdges)
             setRoadmap(tempRoadmap);
-
-            // Remove the plus node
 
             // Send them to the backend
             onUpdate()
