@@ -1,10 +1,16 @@
 import React, {useEffect, useState} from "react"
 import {Canvas, Node, useSelection} from "reaflow";
 import useDidMount from "../api/useDidMount";
+import BlockPickerMenu from "./BlockPickerMenu";
+import {translateXYToCanvasPosition} from "../api/TranslateXYToCanvasPosition";
 
 export default function RoadmapLayout (props) {
     const [nodes, setNodes] = useState([])
     const [edges, setEdges] = useState([])
+    const [blockPickerMenu, setBlockPickerMenu] = useState({
+        isDisplayed: false,
+        left: 0,
+        top: 0})
 
     const loadEdges = () => {
         setEdges(props.roadmap.edges.map(edge => {
@@ -27,10 +33,6 @@ export default function RoadmapLayout (props) {
                     title: node.title
                 }
             })}))
-    }
-
-    const findNode = (nodeId) => {
-        return nodes != null && nodes.find((node) => nodeId === node.id)
     }
 
     const findEdgesFromNode = (nodeId) => {
@@ -66,51 +68,7 @@ export default function RoadmapLayout (props) {
             edges,
             selections,
             onSelection: (s) => {
-                // if only one node is selected
-                if (s.length === 1 && !s[0].endsWith('+')) {
-                    // Finds a temporary node (the plus node) to delete it
-                    const nodeToDelete = nodes.filter(node => node.data.type === "PLUS")
-                    const selectedNode = findNode(s[0])
-                    const newNodeId = selectedNode.id + '+'
-
-                    // If not selecting the node twice
-                    if (nodeToDelete.length === 0 || nodeToDelete[0].id !== newNodeId) {
-                        let tempNodes = nodes
-                        let tempEdges = edges
-
-                        if (nodeToDelete.length > 0) {
-                            // Creates a new edge in order to restore the old connection between the selected node and its old children
-                            const plusNodeParentEdge = findEdgesToNode(nodeToDelete[0].id)
-                            const plusNodeChildrenEdges = findEdgesFromNode(nodeToDelete[0].id)
-                            // If not removing a leaf node
-                            if (plusNodeChildrenEdges.length > 0)
-                                tempEdges = tempEdges.concat(createEdge(plusNodeParentEdge[0].from, plusNodeChildrenEdges[0].to))
-
-                            // Deletes both edges in plus node
-                            tempEdges = tempEdges.filter(edge => (edge !== plusNodeParentEdge[0]) && (plusNodeChildrenEdges.length === 0 || edge !== plusNodeChildrenEdges[0]))
-
-                            // Deletes the plus node & edge from plus node
-                            tempNodes = nodes.filter(node => node !== nodeToDelete[0])
-                        }
-                        // Adds a button with a plus symbol as a temporary node
-                        tempNodes = tempNodes.concat(createNode(newNodeId, "+"))
-
-                        // Adds an edge from the selected node to the new plus node
-                        tempEdges = tempEdges.concat(createEdge(selectedNode.id, newNodeId))
-
-                        // Replace edge from selected node to the selected node's children to plus node to selected node's children
-                        const edgesToDelete = findEdgesFromNode(s[0])
-                        // If it isn't a leaf node
-                        if (edgesToDelete.length > 0) {
-                            tempEdges = tempEdges.concat(createEdge(newNodeId, edgesToDelete[0].to))
-                            tempEdges = tempEdges.filter(childrenEdge => childrenEdge !== edgesToDelete[0])
-                        }
-
-                        // Save
-                        setEdges(tempEdges)
-                        setNodes(tempNodes)
-                    }
-                }
+                console.log('Selecting Node', s);
             }
         });
 
@@ -126,7 +84,7 @@ export default function RoadmapLayout (props) {
                 if (!didMount) { loadRoadmapData() }
             }, [didMount, props.roadmap])
 
-        if (props.roadmap == null)
+    if (props.roadmap == null)
             return <div/>
         else {
             return <div style={{
@@ -139,6 +97,7 @@ export default function RoadmapLayout (props) {
                 transform: "scale(1)",
                 zIndex: "-10000"
             }}>
+                <BlockPickerMenu data={blockPickerMenu}/>
                 <Canvas
                     direction="DOWN"
                     nodes={nodes}
@@ -146,9 +105,62 @@ export default function RoadmapLayout (props) {
                     selection={selections}
                     node={
                         <Node
-                            onClick = {(event, node) => {
-                            console.log('Selecting Node', event, node);
-                            onClick(event, node);
+                            onClick = {(event, selectedNode) => {
+                                    if (!selectedNode.id.endsWith('+')) {
+                                        // Finds a temporary node (the plus node) to delete it
+                                        const nodeToDelete = nodes.filter(node => node.data.type === "PLUS")
+                                        const newNodeId = selectedNode.id + '+'
+
+                                        // If not selecting the node twice
+                                        if (nodeToDelete.length === 0 || nodeToDelete[0].id !== newNodeId) {
+                                            let tempNodes = nodes
+                                            let tempEdges = edges
+
+                                            if (nodeToDelete.length > 0) {
+                                                // Creates a new edge in order to restore the old connection between the selected node and its old children
+                                                const plusNodeParentEdge = findEdgesToNode(nodeToDelete[0].id)
+                                                const plusNodeChildrenEdges = findEdgesFromNode(nodeToDelete[0].id)
+                                                // If not removing a leaf node
+                                                if (plusNodeChildrenEdges.length > 0)
+                                                    tempEdges = tempEdges.concat(createEdge(plusNodeParentEdge[0].from, plusNodeChildrenEdges[0].to))
+
+                                                // Deletes both edges in plus node
+                                                tempEdges = tempEdges.filter(edge => (edge !== plusNodeParentEdge[0]) && (plusNodeChildrenEdges.length === 0 || edge !== plusNodeChildrenEdges[0]))
+
+                                                // Deletes the plus node & edge from plus node
+                                                tempNodes = nodes.filter(node => node !== nodeToDelete[0])
+                                            }
+                                            // Adds a button with a plus symbol as a temporary node
+                                            tempNodes = tempNodes.concat(createNode(newNodeId, "+"))
+
+                                            // Adds an edge from the selected node to the new plus node
+                                            tempEdges = tempEdges.concat(createEdge(selectedNode.id, newNodeId))
+
+                                            // Replace edge from selected node to the selected node'selectedNode children to plus node to selected node'selectedNode children
+                                            const edgesToDelete = findEdgesFromNode(selectedNode)
+                                            // If it isn't a leaf node
+                                            if (edgesToDelete.length > 0) {
+                                                tempEdges = tempEdges.concat(createEdge(newNodeId, edgesToDelete[0].to))
+                                                tempEdges = tempEdges.filter(childrenEdge => childrenEdge !== edgesToDelete[0])
+                                            }
+
+                                            // Save
+                                            setEdges(tempEdges)
+                                            setNodes(tempNodes)
+                                        }
+                                    } else {
+                                        // Converts the x/y position to a Canvas position and apply some margin for the BlockPickerMenu
+                                        // to display on the right bottom of the cursor
+                                        const [x, y] = translateXYToCanvasPosition(event.clientX, event.clientY, { top: 3, left: -330 });
+
+                                        // Opens the block picker menu below the clicked element
+                                        setBlockPickerMenu({
+                                            isDisplayed: true,
+                                            // Depending on the position of the canvas, you might need to deduce from x/y some delta
+                                            left: x,
+                                            top: y,
+                                        });
+                                    }
                         }}>
                             {event => (
                                 <foreignObject height={event.height} width={event.width} x={0} y={0} pointerEvents="none">
