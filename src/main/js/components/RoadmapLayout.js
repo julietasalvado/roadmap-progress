@@ -4,6 +4,7 @@ import useDidMount from "../api/useDidMount";
 import BlockPickerMenu from "./BlockPickerMenu";
 import {translateXYToCanvasPosition} from "../api/TranslateXYToCanvasPosition";
 import client from "./../client";
+import {getIdFromHref} from "../utils/idUtils";
 
 export default function RoadmapLayout (props) {
     const [nodes, setNodes] = useState([])
@@ -159,16 +160,12 @@ export default function RoadmapLayout (props) {
             }
         });
 
-    const getRoadmapId = (href) => {
-        return href.substr(href.lastIndexOf('/') + 1, href.length)
-    }
-
     const loadRoadmapData = () => {
         if (props.roadmap != null) {
             loadEdges()
             loadNodes()
             const tempRoadmap = props.roadmap
-            tempRoadmap.id = getRoadmapId(tempRoadmap._links.self.href)
+            tempRoadmap.id = getIdFromHref(tempRoadmap._links.self.href)
             setRoadmap(tempRoadmap)
         }
     }
