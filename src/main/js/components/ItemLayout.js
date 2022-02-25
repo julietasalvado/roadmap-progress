@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react"
-import {Accordion, Card, CardGroup, Grid, Image, Label, List} from "semantic-ui-react";
+import {Accordion, Card, CardGroup, Checkbox, Grid, Image, Label, List} from "semantic-ui-react";
 import {BookProgress} from "./BookProgress";
 import {Item} from "./Item";
 import follow from "./../follow"
@@ -105,6 +105,9 @@ export default function ItemLayout (props) {
                                         <List.Item>
                                             <List.Content>
                                                 <List.Header>{module.title}</List.Header>
+                                                {module.completed && <Checkbox defaultChecked
+                                                />}
+                                                {!module.completed && <Checkbox/>}
                                             </List.Content>
                                         </List.Item>
                                 </List>})}
