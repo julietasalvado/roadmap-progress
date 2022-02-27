@@ -3,10 +3,16 @@ import {Canvas, Node, useSelection, addNodeAndEdge, getParentsForNodeId} from "r
 import useDidMount from "../api/useDidMount";
 import BlockPickerMenu from "./BlockPickerMenu";
 import {translateXYToCanvasPosition} from "../api/TranslateXYToCanvasPosition";
+import follow from "./../follow";
+import client from "./../client";
 
 export default function RoadmapLayout (props) {
     const [nodes, setNodes] = useState([])
     const [edges, setEdges] = useState([])
+    const [roadmap, setRoadmap] = useState([])
+    const [attributes, setAttributes] = useState([])
+    const [links, setLinks] = useState({})
+    const [schema, setSchema] = useState()
     const [blockPickerMenu, setBlockPickerMenu] = useState({
         isDisplayed: false,
         left: 0,
@@ -14,22 +20,63 @@ export default function RoadmapLayout (props) {
         displayedFrom: null
     })
 
+    const convertEdges = (from) => {
+        return from.map(edge => { return ({
+            edgeId: edge.id,
+            edgeFrom: edge.from,
+            edgeTo: edge.to,
+            roadmap: roadmap._links.self.href
+        })})
+    }
+
+    const convertNodes = (from) => {
+        return from.map(node => {
+            return ({
+                nodeId: node.id,
+                height: node.height,
+                width: node.width,
+                type: node.data.type,
+                title: node.data.title,
+                roadmap: roadmap._links.self.href
+            })})
+    }
+
+    const root = '/api';
     const onCreationConfirmation = (e, displayedFrom) => {
         // Send new node to the backend
         if (e.key === "Enter") {
             const parentEdge = findEdgesToNode(displayedFrom.id);
 
             // Create edge & node
-            const newNode = createNormalNode(nodes.length + 1, e.target.value)
+            const newNode = createNormalNode(nodes.length, e.target.value)
             const newEdge = createEdge(parentEdge[0].from, newNode.id)
 
-            setNodes(nodes.concat(newNode));
-            setEdges(edges.concat(newEdge));
+            setEdges(nodes.concat(newNode))
+            setNodes(edges.concat(newEdge))
+
+            const tempRoadmap = roadmap
+            tempRoadmap.nodes = convertNodes(nodes.concat(newNode))
+            tempRoadmap.edges = convertEdges(edges.concat(newEdge))
+            setRoadmap(tempRoadmap);
 
             // Remove the plus node
 
             // Send them to the backend
+            onUpdate()
         }
+    }
+
+    const onUpdate = () => {
+        client({
+            method: 'PUT',
+            path: roadmap._links.self.href,
+            entity: roadmap,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).done(response => {
+            console.log("Updated")
+        });
     }
 
     const loadEdges = () => {
@@ -43,7 +90,7 @@ export default function RoadmapLayout (props) {
     }
 
     const loadNodes = () => {
-        setNodes(props.roadmap.nodes.map(node => {
+       setNodes(props.roadmap.nodes.map(node => {
             return ({
                 id: node.id,
                 height: node.height,
@@ -72,7 +119,7 @@ export default function RoadmapLayout (props) {
     }
 
     const createNormalNode = (id, title) => {
-        return createNode(id, title, 'MAIN_TOPIC', 125, 250)
+        return createNode(id + '', title, 'MAIN_TOPIC', 125, 250)
     }
 
     const createPlusNode = (id) => {
@@ -100,10 +147,17 @@ export default function RoadmapLayout (props) {
             }
         });
 
+    const getRoadmapId = (href) => {
+        return href.substr(href.lastIndexOf('/') + 1, href.length)
+    }
+
     const loadRoadmapData = () => {
         if (props.roadmap != null) {
             loadEdges()
             loadNodes()
+            const tempRoadmap = props.roadmap
+            tempRoadmap.id = getRoadmapId(tempRoadmap._links.self.href)
+            setRoadmap(tempRoadmap)
         }
     }
 
@@ -175,6 +229,11 @@ export default function RoadmapLayout (props) {
                                             // Save
                                             setEdges(tempEdges)
                                             setNodes(tempNodes)
+
+                                            const tempRoadmap = roadmap
+                                            tempRoadmap.nodes = nodes
+                                            tempRoadmap.edges = edges
+                                            setRoadmap(tempRoadmap);
                                         }
                                     } else {
                                         // Converts the x/y position to a Canvas position and apply some margin for the BlockPickerMenu
