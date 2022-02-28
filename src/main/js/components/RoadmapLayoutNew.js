@@ -5,7 +5,6 @@ import BlockPickerMenu from "./BlockPickerMenu";
 import {translateXYToCanvasPosition} from "../api/TranslateXYToCanvasPosition";
 import client from "./../client";
 import {getIdFromHref} from "../utils/idUtils";
-import ReactFlow from 'react-flow-renderer';
 
 export default function RoadmapLayoutNew (props) {
     const [nodes, setNodes] = useState([])
@@ -20,46 +19,22 @@ export default function RoadmapLayoutNew (props) {
 
     const convertEdges = (from) => {
         return from.map(edge => { return ({
-            id: edge.id,
-            source: edge.from,
-            target: edge.to,
+            edgeId: edge.id,
+            edgeFrom: edge.from,
+            edgeTo: edge.to,
             roadmap: roadmap._links.self.href
         })})
     }
 
     const convertNodes = (from) => {
         return from.map(node => {
-            console.log(node)
-            if (node.data.type === 'START')
-                return ({
-                    id: node.id,
-                    type: 'input',
-                    myType: node.data.type,
-                    roadmap: roadmap._links.self.href,
-                    position: {
-                        x: 50,
-                        y: 100
-                    },
-                    data: {
-                        label: (
-                            node.data.title
-                        ),
-                    },
-                })
             return ({
-                id: node.id,
-                type: 'input',
-                myType: node.data.type,
-                roadmap: roadmap._links.self.href,
-                position: {
-                    x: 100,
-                    y: 100
-                },
-                data: {
-                    label: (
-                        node.data.title
-                    ),
-                },
+                nodeId: node.id,
+                height: node.height,
+                width: node.width,
+                type: node.data.type,
+                title: node.data.title,
+                roadmap: roadmap._links.self.href
             })})
     }
 
@@ -200,9 +175,6 @@ export default function RoadmapLayoutNew (props) {
         if (!didMount) { loadRoadmapData() }
     }, [didMount, props.roadmap])
 
-    const elements = convertNodes(nodes).concat(convertEdges(edges))
-
-    console.log(elements)
     if (props.roadmap == null)
         return <div/>
     else {
@@ -217,11 +189,6 @@ export default function RoadmapLayoutNew (props) {
             zIndex: "-10000"
         }}>
             <BlockPickerMenu data={blockPickerMenu} onConfirmation={onCreationConfirmation}/>
-            <ReactFlow
-                elements={elements}
-                onPaneClick={ () => {
-                    console.log('click!')}}>
-            </ReactFlow>
             <Canvas
                 direction="DOWN"
                 nodes={nodes}
@@ -319,7 +286,7 @@ export default function RoadmapLayoutNew (props) {
                             <foreignObject height={event.height} width={event.width} x={0} y={0} pointerEvents="none">
                                 {event.node.data.type === "MAIN_TOPIC" &&
                                 <div style={{padding: 10, textAlign: 'center', background: "white", border: "none"}}>
-                                    <h3 style={{color: "#353536"}}>event.node.data.title</h3>
+                                    <h3 style={{color: "#353536"}}>{event.node.data.title}</h3>
                                     <input type="range" min="1" max="100" value={event.node.data.value}/>
                                 </div>
                                 }
@@ -329,12 +296,12 @@ export default function RoadmapLayoutNew (props) {
                                     textAlign: 'center',
                                     borderRadius: "5px 5px 0px 0px"
                                 }}>
-                                    <h3 style={{color: 'white'}}>event.node.data.title</h3>
+                                    <h3 style={{color: 'white'}}>{event.node.data.title}</h3>
                                 </div>
                                 }
                                 {(event.node.data.type === "PLUS" || event.node.data.type === "MATERIAL-PLUS") &&
                                 <div style={{textAlign: 'center', backgroundColor: "#8b9395", border: "none"}}>
-                                    <h5 style={{color: 'dark grey'}}>event.node.data.title</h5>
+                                    <h5 style={{color: 'dark grey'}}>{event.node.data.title}</h5>
                                 </div>
                                 }
                                 }

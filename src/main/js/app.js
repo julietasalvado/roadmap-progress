@@ -3,6 +3,7 @@ import ItemLayout from "./components/ItemLayout";
 import RoadmapLayout from "./components/RoadmapLayout";
 import {useEffect, useState} from "react";
 import 'regenerator-runtime/runtime'
+import RoadmapLayoutNew from "./components/RoadmapLayoutNew";
 
 // tag::vars[]
 const React = require('react');
@@ -10,7 +11,7 @@ const ReactDOM = require('react-dom');
 // end::vars[]
 
 // tag::app[]
-export default function App (props) {
+export default function App () {
 	const [activeItem, setActiveItem] = useState("books")
 	const [roadmapList, setRoadmapList] = useState([])
 	const [attributes, setAttributes] = useState([])
@@ -19,6 +20,7 @@ export default function App (props) {
 	const [isbn, setIsbn] = useState("")
 	const [submittedIsbn, setSubmittedIsbn] = useState("")
 	const [schema, setSchema] = useState()
+	const [newItemData, setNewItemData] = useState(null)
 
 	const handleItemClick = (e, name) => setActiveItem(name)
 
@@ -30,6 +32,18 @@ export default function App (props) {
 	}
 
 	const handleAddNewItemSubmit = () => setSubmittedIsbn(isbn)
+
+	const handleAddNewItemSubmitFromRoadmap = (event, type, data) => {
+		console.log('type', type)
+		console.log('data', data)
+		setNewItemData(
+			{
+				data: data,
+				type: type
+			}
+		)
+		setActiveItem('books')
+	}
 
 	const getRoadmapList = () => {
 		const follow = require('./follow'); // function to hop multiple links by "rel"
@@ -53,15 +67,26 @@ export default function App (props) {
 		})
 	}
 
-		const mainContent = (activeItem === 'books'
-			? <Segment style={{padding: '8em 3em'}} vertical>
-				<ItemLayout newItem={submittedIsbn} />
-			</Segment>
-			: <Segment vertical>
+	let mainContent;
+	switch (activeItem) {
+		case 'books':
+			mainContent = <Segment style={{padding: '8em 3em'}} vertical>
+				<ItemLayout newItem={submittedIsbn}/>
+			</Segment>;
+			break;
+		case 'roadmaps':
+			mainContent = <Segment vertical>
 				<RoadmapLayout roadmap={roadmapList.find(roadmap => roadmap.name === activeRoadmap)}/>
-			</Segment>)
+			</Segment>;
+			break;
+		default:
+			mainContent = <Segment vertical>
+				<RoadmapLayoutNew roadmap={roadmapList.find(roadmap => roadmap.name === activeRoadmap)}/>
+			</Segment>;
+			break;
+	}
 
-		const options = [
+	const options = [
 			{
 				key: 1,
 				text: 'ISBN',
@@ -151,6 +176,13 @@ export default function App (props) {
 								<Menu.Item as='a'
 										   active={activeItem === 'roadmaps'}
 										   onClick={(e) => handleItemClick(e,'roadmaps')}
+								>
+									<Icon name='map' />
+									Roadmaps
+								</Menu.Item>
+								<Menu.Item as='a'
+										   active={activeItem === 'new_roadmaps'}
+										   onClick={(e) => handleItemClick(e,'new roadmaps')}
 								>
 									<Icon name='map' />
 									Roadmaps
