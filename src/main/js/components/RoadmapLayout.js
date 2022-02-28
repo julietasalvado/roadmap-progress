@@ -229,22 +229,6 @@ export default function RoadmapLayoutNew (props) {
                 selection={selections}
                 node={
                     <Node
-                        port={
-                            <Port
-                                onClick={(e, node) => {
-                                    console.log('onClick port: ', node);
-                                }}
-                                onEnter={(e, node) => {
-                                    console.log('onEnter port: ', node);
-                                }}
-                                onLeave={(e, node) => {
-                                    console.log('onLeave port: ', node);
-                                }}
-                                style={{ fill: 'blue', stroke: 'white' }}
-                                rx={10}
-                                ry={10}
-                            />
-                        }
                         onClick = {(event, selectedNode) => {
                             if (!selectedNode.id.endsWith('+')) {
                                 // Finds a temporary node (the plus node) to delete it
