@@ -156,14 +156,24 @@ export default function RoadmapLayout (props) {
     }
 
     const createPlusNode = (id, x, y) => {
-        return createNode(id, '+', 'PLUS', x+25, y+50)
+        return createNode(id, '+', 'PLUS', x + 160, y - 30, {
+            background: '#f1e826',
+            color: '#333',
+            border: '3px solid ##f1e826',
+            width: 50,
+        })
     }
 
     const createMaterialPlusNode = (id, x, y) => {
-        return createNode(id, 'Add Material', 'MATERIAL-PLUS', x+40, y+80)
+        return createNode(id, 'Add Material', 'MATERIAL-PLUS', x + 160, y + 30, {
+            background: '#D6D5E6',
+                color: '#333',
+                border: '1px solid #222138',
+                width: 100,
+        },)
     }
 
-    const createNode = (id, title, type, x, y) => {
+    const createNode = (id, title, type, x, y, style) => {
         return ({
             id: id,
             myType: type,
@@ -173,7 +183,8 @@ export default function RoadmapLayout (props) {
             position: {
                 x: x,
                 y: y
-            }
+            },
+            style: style
         })
     }
 
