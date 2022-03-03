@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react"
 import {Canvas, Node, Port, useSelection} from "reaflow";
 import useDidMount from "../api/useDidMount";
-import BlockPickerMenu from "./BlockPickerMenu";
+import BlockPickerMenu from "./BlockPickerMenuNew";
 import {translateXYToCanvasPosition} from "../api/TranslateXYToCanvasPosition";
 import client from "./../client";
 import {getIdFromHref} from "../utils/idUtils";

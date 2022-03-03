@@ -1,15 +1,13 @@
 import React, {useEffect, useState} from "react"
-import {Canvas, Node, Port, useSelection} from "reaflow";
 import useDidMount from "../api/useDidMount";
 import BlockPickerMenu from "./BlockPickerMenu";
 import {translateXYToCanvasPosition} from "../api/TranslateXYToCanvasPosition";
 import client from "./../client";
 import {getIdFromHref} from "../utils/idUtils";
 import ReactFlow, {removeElements} from 'react-flow-renderer';
+import PlusNode from "./nodes/PlusNode";
 
 export default function RoadmapLayout (props) {
-    const [nodes, setNodes] = useState([])
-    const [edges, setEdges] = useState([])
     const [roadmap, setRoadmap] = useState([])
     const [elements, setElements] = useState([])
     const [blockPickerMenu, setBlockPickerMenu] = useState({
@@ -19,54 +17,11 @@ export default function RoadmapLayout (props) {
         displayedFrom: null
     })
 
-    const convertEdges = (from) => {
-        return from.map(edge => { return ({
-            id: edge.id,
-            source: edge.from,
-            target: edge.to,
-        })})
-    }
-
-    const convertNodes = (from) => {
-        return from.map(node => {
-            console.log(node)
-            if (node.data.type === 'START')
-                return ({
-                    id: node.id,
-                    type: 'input',
-                    nodeType: node.data.type,
-                    position: {
-                        x: node.x,
-                        y: node.y
-                    },
-                    data: {
-                        label: (
-                            node.data.title
-                        ),
-                    },
-                })
-            return ({
-                id: node.id,
-                type: 'input',
-                nodeType: node.data.type,
-                /*TODO roadmap: roadmap._links.self.href,*/
-                position: {
-                    x: node.x,
-                    y: node.y
-                },
-                data: {
-                    label: (
-                        node.data.title
-                    ),
-                },
-            })})
-    }
-
     const onCreationConfirmation = (e, displayedFrom) => {
         // Send new node to the backend
         if (e.key === "Enter") {
             // Close block picker
-            setBlockPickerMenu({
+            /*setBlockPickerMenu({
                 isDisplayed: false,
                 left: 0,
                 top: 0,
@@ -90,16 +45,16 @@ export default function RoadmapLayout (props) {
 
             // Update roadmap element
             const tempRoadmap = roadmap
-            tempRoadmap.nodes = convertNodes(tempNodes)
+            tempRoadmap.nodes = convertNodesFromDB(tempNodes)
             tempRoadmap.edges = convertEdges(tempEdges)
             setRoadmap(tempRoadmap);
 
             // Send them to the backend
-            onUpdate()
+            onUpdate()*/
         }
     }
 
-    const onUpdate = () => {
+/*    const onUpdate = () => {
         client({
             method: 'PUT',
             path: roadmap._links.self.href,
@@ -110,38 +65,54 @@ export default function RoadmapLayout (props) {
         }).done(response => {
             console.log("Updated")
         });
-    }
+    }*/
 
-    const loadEdges = () => {
+    const convertEdges = () => {
         return (props.roadmap.edges.map(edge => {
             return ({
                 id: edge.id,
-                from: edge.edgeFrom,
-                to: edge.edgeTo
+                source: edge.edgeFrom,
+                target: edge.edgeTo
             })
         }))
     }
 
-    const loadNodes = () => {
+    const convertNodesFromUI = (node) => {
+        return {
+            id: node.id,
+            nodeType: node.type,
+            data: node.data,
+            position: node.position,
+            // TODO roadmap: props.roadmap._links.self.href,
+            type: node.type,
+        }
+    }
+
+    const convertNodesFromDB = () => {
         return (props.roadmap.nodes.map(node => {
             return ({
                 id: node.id,
-                height: node.height,
-                width: node.width,
+                nodeType: node.nodeType,
                 data: {
-                    type: node.type,
-                    title: node.title
+                    label: (
+                        node.title
+                    ),
                 },
-                x: node.x,
-                y: node.y,
+                position: {
+                    x: node.x,
+                    y: node.y
+                },
+                // TODO roadmap: props.roadmap._links.self.href,
+                type: 'input',
             })}))
     }
 
-    const findEdgesToNode = (nodeId) => {
+/*    const findEdgesToNode = (nodeId) => {
         return edges != null && edges.filter(edge => edge.to === nodeId)
-    }
+    }*/
 
     const createEdge = (parentId, childrenId) => {
+        console.log('creating edge', parentId, childrenId)
         return ({
             id: parentId + '-' + childrenId,
             source: parentId,
@@ -149,12 +120,12 @@ export default function RoadmapLayout (props) {
         })
     }
 
-    const createNormalNode = (id, title) => {
+/*    const createNormalNode = (id, title) => {
         return createNode(id + '', title, 'MAIN_TOPIC', 125, 250)
-    }
+    }*/
 
     const createPlusNode = (id, x, y) => {
-        return createNode(id, '+', 'PLUS', x + 160, y - 30, {
+        return createNode(id, '', 'PLUS', x + 160, y - 30, {
             background: '#f1e826',
             color: '#333',
             border: '3px solid ##f1e826',
@@ -174,7 +145,7 @@ export default function RoadmapLayout (props) {
     const createNode = (id, title, type, x, y, style) => {
         return ({
             id: id,
-            nodeType: type,
+            type: type,
             data: {
                 label: title
             },
@@ -186,22 +157,23 @@ export default function RoadmapLayout (props) {
         })
     }
 
-    const {selections, onClick} = useSelection({
+/*    const {selections, onClick} = useSelection({
         nodes,
         edges,
         selections,
         onSelection: (s) => {
             console.log('Selecting Node', s);
         }
-    });
+    });*/
 
     const loadRoadmapData = () => {
         if (props.roadmap != null) {
+            setElements(convertNodesFromDB().concat(convertEdges()))
+
             const tempRoadmap = props.roadmap
             tempRoadmap.id = getIdFromHref(tempRoadmap._links.self.href)
+            tempRoadmap.elements = elements;
             setRoadmap(tempRoadmap)
-
-            setElements(convertNodes(loadNodes()).concat(convertEdges(loadEdges())))
         }
     }
 
@@ -209,6 +181,10 @@ export default function RoadmapLayout (props) {
     useEffect(() => {
         if (!didMount) { loadRoadmapData() }
     }, [didMount, props.roadmap])
+
+    const nodeTypes = {
+        PLUS: PlusNode,
+    };
 
     console.log(elements)
     if (props.roadmap == null)
@@ -226,6 +202,7 @@ export default function RoadmapLayout (props) {
         }}>
             <BlockPickerMenu data={blockPickerMenu} onConfirmation={onCreationConfirmation}/>
             <ReactFlow
+                nodeTypes={nodeTypes}
                 elements={elements}
                 onElementClick={(event, selectedNode) => {
                     console.log('element ', selectedNode)
@@ -256,64 +233,26 @@ export default function RoadmapLayout (props) {
                             // Save
                             setElements(tempElements)
 
-                            //         const tempRoadmap = roadmap
-                            //         tempRoadmap.nodes = nodes
-                            //         tempRoadmap.edges = edges
-                            //         setRoadmap(tempRoadmap);
-                             }
-                        } else {
-                            console.log("is a plus node")
-                        //     // Converts the x/y position to a Canvas position and apply some margin for the BlockPickerMenu
-                        //     // to display on the right bottom of the cursor
-                        //     const [x, y] = translateXYToCanvasPosition(event.clientX, event.clientY, { top: 3, left: -330 });
-                        //
-                        //     // Opens the block picker menu below the clicked element
-                        //     setBlockPickerMenu({
-                        //         isDisplayed: true,
-                        //         // Depending on the position of the canvas, you might need to deduce from x/y some delta
-                        //         left: x,
-                        //         top: y,
-                        //         displayedFrom: selectedNode
-                        //     });
+                            const tempRoadmap = roadmap
+                            tempRoadmap.elements = elements;
+                            setRoadmap(tempRoadmap);
+                        }} else {
+                            // Converts the x/y position to a Canvas position and apply some margin for the BlockPickerMenu
+                            // to display on the right bottom of the cursor
+                            const [x, y] = translateXYToCanvasPosition(event.clientX, event.clientY, { top: 3, left: -330 });
+
+                            // Opens the block picker menu below the clicked element
+                            setBlockPickerMenu({
+                                isDisplayed: true,
+                                // Depending on the position of the canvas, you might need to deduce from x/y some delta
+                                left: x,
+                                top: y,
+                                displayedFrom: convertNodesFromUI(selectedNode)
+                            });
                         }
                 }}
             >
             </ReactFlow>
-            <Canvas
-                direction="DOWN"
-                nodes={nodes}
-                edges={edges}
-                selection={selections}
-                node={
-                    <Node>
-                        {event => (
-                            <foreignObject height={event.height} width={event.width} x={0} y={0} pointerEvents="none">
-                                {event.node.data.type === "MAIN_TOPIC" &&
-                                <div style={{padding: 10, textAlign: 'center', background: "white", border: "none"}}>
-                                    <h3 style={{color: "#353536"}}>event.node.data.title</h3>
-                                    <input type="range" min="1" max="100" value={event.node.data.value}/>
-                                </div>
-                                }
-                                {event.node.data.type === "START" &&
-                                <div style={{
-                                    padding: 10,
-                                    textAlign: 'center',
-                                    borderRadius: "5px 5px 0px 0px"
-                                }}>
-                                    <h3 style={{color: 'white'}}>event.node.data.title</h3>
-                                </div>
-                                }
-                                {(event.node.data.type === "PLUS" || event.node.data.type === "MATERIAL-PLUS") &&
-                                <div style={{textAlign: 'center', backgroundColor: "#8b9395", border: "none"}}>
-                                    <h5 style={{color: 'dark grey'}}>event.node.data.title</h5>
-                                </div>
-                                }
-                                }
-                            </foreignObject>
-                        )}
-                    </Node>
-                }
-            />
         </div>
     }
 }

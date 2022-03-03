@@ -6,7 +6,7 @@ import {Button, Checkbox, Form, Input, Popup} from "semantic-ui-react";
 import {css, jsx} from "@emotion/react";
 import useDidMount from "../api/useDidMount";
 
-export default function BlockPickerMenu(props) {
+export default function BlockPickerMenuNew(props) {
     const [isDisplayed, setIsDisplayed] = useState(false)
     const [title, setTitle] = useState("")
     const [cover, setCover] = useState("")
@@ -28,7 +28,6 @@ export default function BlockPickerMenu(props) {
         return null;
     }
 
-    console.log(props)
     return (<div
         css={css`
                 z-index: 5;
@@ -50,12 +49,12 @@ export default function BlockPickerMenu(props) {
               `}
     >
         <div className={'blocks-picker'} >
-            {props.data.displayedFrom.nodeType === 'PLUS' && <Input
+            {props.data.displayedFrom.data.type === 'PLUS' && <Input
                 focus
                 placeholder='Node name...'
                 onKeyPress={(e) => props.onConfirmation(e, props.data.displayedFrom)}
             />}
-            {props.data.displayedFrom.nodeType !== 'PLUS' &&
+            {props.data.displayedFrom.data.type !== 'PLUS' &&
             <div>
                 <Button>
                 Book
