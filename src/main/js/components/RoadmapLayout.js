@@ -234,11 +234,11 @@ export default function RoadmapLayout (props) {
                 onElementClick={(event, selectedNode) => {
                     console.log('element ', selectedNode)
 
-                    // if (!selectedNode.id.endsWith('+')) {
+                    if (!selectedNode.id.endsWith('+')) {
                         //     // Finds a temporary node (the plus node) to delete it
                         //     const nodesToDelete = nodes.filter(node => node.data.type === "PLUS" || node.data.type === "MATERIAL-PLUS")
-                    const newNodeId = selectedNode.id + '+'
-                    const newMaterialId = selectedNode.id + 'M+'
+                        const newNodeId = selectedNode.id + '+'
+                        const newMaterialId = selectedNode.id + 'M+'
                         //
                         //     // If not selecting the node twice
                         //     if (nodesToDelete.length === 0 || nodesToDelete[0].id !== newNodeId || nodesToDelete[0].id !== newMaterialId) {
@@ -262,13 +262,13 @@ export default function RoadmapLayout (props) {
                         //             })
                         //         }
 
-                    tempElements = tempElements
-                        // Adds two nodes with plus symbols -add material and add node- as a temporary nodes
-                        .concat(createPlusNode(newNodeId, selectedNode.position.x, selectedNode.position.y))
-                        .concat(createMaterialPlusNode(newMaterialId, selectedNode.position.x, selectedNode.position.y))
-                        // Adds an edge from the selected node to the new plus nodes
-                        .concat(createEdge(selectedNode.id, newNodeId))
-                        .concat(createEdge(selectedNode.id, newMaterialId))
+                        tempElements = tempElements
+                            // Adds two nodes with plus symbols -add material and add node- as a temporary nodes
+                            .concat(createPlusNode(newNodeId, selectedNode.position.x, selectedNode.position.y))
+                            .concat(createMaterialPlusNode(newMaterialId, selectedNode.position.x, selectedNode.position.y))
+                            // Adds an edge from the selected node to the new plus nodes
+                            .concat(createEdge(selectedNode.id, newNodeId))
+                            .concat(createEdge(selectedNode.id, newMaterialId))
                         //
                         //         // Replace edge from selected node to the selected node'selectedNode children to plus node to selected node'selectedNode children
                         //         const edgesToDelete = findEdgesFromNode(selectedNode)
@@ -278,8 +278,8 @@ export default function RoadmapLayout (props) {
                         //             tempEdges = tempEdges.filter(childrenEdge => childrenEdge !== edgesToDelete[0])
                         //         }
                         //
-                    // Save
-                    setElements(tempElements)
+                        // Save
+                        setElements(tempElements)
 
                         //
                         //         const tempRoadmap = roadmap
@@ -287,7 +287,8 @@ export default function RoadmapLayout (props) {
                         //         tempRoadmap.edges = edges
                         //         setRoadmap(tempRoadmap);
                         //     }
-                        // } else {
+                        } else {
+                            console.log("is a plus node")
                         //     // Converts the x/y position to a Canvas position and apply some margin for the BlockPickerMenu
                         //     // to display on the right bottom of the cursor
                         //     const [x, y] = translateXYToCanvasPosition(event.clientX, event.clientY, { top: 3, left: -330 });
@@ -300,7 +301,7 @@ export default function RoadmapLayout (props) {
                         //         top: y,
                         //         displayedFrom: selectedNode
                         //     });
-                        // }
+                        }
                 }}
             >
             </ReactFlow>
