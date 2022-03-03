@@ -34,7 +34,7 @@ export default function RoadmapLayout (props) {
                 return ({
                     id: node.id,
                     type: 'input',
-                    myType: node.data.type,
+                    nodeType: node.data.type,
                     position: {
                         x: node.x,
                         y: node.y
@@ -48,7 +48,7 @@ export default function RoadmapLayout (props) {
             return ({
                 id: node.id,
                 type: 'input',
-                myType: node.data.type,
+                nodeType: node.data.type,
                 /*TODO roadmap: roadmap._links.self.href,*/
                 position: {
                     x: node.x,
@@ -178,7 +178,7 @@ export default function RoadmapLayout (props) {
     const createNode = (id, title, type, x, y, style) => {
         return ({
             id: id,
-            myType: type,
+            nodeType: type,
             data: {
                 label: title
             },
@@ -243,7 +243,6 @@ export default function RoadmapLayout (props) {
                         //     // If not selecting the node twice
                         //     if (nodesToDelete.length === 0 || nodesToDelete[0].id !== newNodeId || nodesToDelete[0].id !== newMaterialId) {
                                  let tempElements = elements
-                        //         let tempEdges = edges
                         //
                         //         if (nodesToDelete.length > 0) {
                         //             nodesToDelete.map(nodeToDelete => {
