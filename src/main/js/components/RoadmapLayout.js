@@ -4,7 +4,7 @@ import BlockPickerMenu from "./BlockPickerMenu";
 import {translateXYToCanvasPosition} from "../api/TranslateXYToCanvasPosition";
 import client from "./../client";
 import {getIdFromHref} from "../utils/idUtils";
-import ReactFlow, {removeElements} from 'react-flow-renderer';
+import ReactFlow, {getConnectedEdges, getIncomers, removeElements} from 'react-flow-renderer';
 import PlusNode from "./nodes/PlusNode";
 
 export default function RoadmapLayout (props) {
@@ -21,36 +21,37 @@ export default function RoadmapLayout (props) {
         // Send new node to the backend
         if (e.key === "Enter") {
             // Close block picker
-            /*setBlockPickerMenu({
+            setBlockPickerMenu({
                 isDisplayed: false,
                 left: 0,
                 top: 0,
                 displayedFrom: {}
             });
 
-            const parentEdge = findEdgesToNode(displayedFrom.id);
+            const parentNode = getIncomers(displayedFrom, elements)[0]
 
             // Create edge & node
-            const newNode = createNormalNode(nodes.length, e.target.value)
-            const newEdge = createEdge(parentEdge[0].from, newNode.id)
-            let tempNodes = nodes.concat(newNode)
-            let tempEdges = edges.concat(newEdge)
+            const newNode = createNormalNode(elements.length, e.target.value)
+            const newEdge = createEdge(parentNode.id, newNode.id)
+            let tempElements = elements
+                .concat(newNode)
+                .concat(newEdge)
 
             // Remove the plus node & edge
-            tempEdges = tempEdges.filter(edge => edge !== parentEdge[0])
-            tempNodes = tempNodes.filter(node => node.id !== displayedFrom.id)
+            //tempEdges = tempEdges.filter(edge => edge !== parentEdge[0])
+            //tempNodes = tempNodes.filter(node => node.id !== displayedFrom.id)
 
-            setNodes(tempNodes);
-            setEdges(tempEdges);
+            setElements(tempElements)
+
+            console.log(tempElements)
 
             // Update roadmap element
             const tempRoadmap = roadmap
-            tempRoadmap.nodes = convertNodesFromDB(tempNodes)
-            tempRoadmap.edges = convertEdges(tempEdges)
+            tempRoadmap.elements = tempElements
             setRoadmap(tempRoadmap);
 
             // Send them to the backend
-            onUpdate()*/
+            //onUpdate()*/
         }
     }
 
@@ -107,10 +108,6 @@ export default function RoadmapLayout (props) {
             })}))
     }
 
-/*    const findEdgesToNode = (nodeId) => {
-        return edges != null && edges.filter(edge => edge.to === nodeId)
-    }*/
-
     const createEdge = (parentId, childrenId) => {
         console.log('creating edge', parentId, childrenId)
         return ({
@@ -120,9 +117,9 @@ export default function RoadmapLayout (props) {
         })
     }
 
-/*    const createNormalNode = (id, title) => {
+    const createNormalNode = (id, title) => {
         return createNode(id + '', title, 'MAIN_TOPIC', 125, 250)
-    }*/
+    }
 
     const createPlusNode = (id, x, y) => {
         return createNode(id, '', 'PLUS', x + 160, y - 30, {
