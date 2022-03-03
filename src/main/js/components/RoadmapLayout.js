@@ -36,8 +36,8 @@ export default function RoadmapLayout (props) {
                     type: 'input',
                     myType: node.data.type,
                     position: {
-                        x: 50,
-                        y: 100
+                        x: node.x,
+                        y: node.y
                     },
                     data: {
                         label: (
@@ -51,8 +51,8 @@ export default function RoadmapLayout (props) {
                 myType: node.data.type,
                 /*TODO roadmap: roadmap._links.self.href,*/
                 position: {
-                    x: 100,
-                    y: 100
+                    x: node.x,
+                    y: node.y
                 },
                 data: {
                     label: (
@@ -131,7 +131,9 @@ export default function RoadmapLayout (props) {
                 data: {
                     type: node.type,
                     title: node.title
-                }
+                },
+                x: node.x,
+                y: node.y,
             })}))
     }
 

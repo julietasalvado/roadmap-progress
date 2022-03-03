@@ -39,6 +39,9 @@ public class Node {
   @Enumerated(EnumType.STRING)
   private NodeTypeEnum type;
 
+  private int x;
+  private int y;
+
   public String getId() {
     return this.nodeId;
   }
