@@ -24,7 +24,6 @@ export default function RoadmapLayout (props) {
             id: edge.id,
             source: edge.from,
             target: edge.to,
-            roadmap: roadmap._links.self.href
         })})
     }
 
@@ -36,7 +35,6 @@ export default function RoadmapLayout (props) {
                     id: node.id,
                     type: 'input',
                     myType: node.data.type,
-                    roadmap: roadmap._links.self.href,
                     position: {
                         x: 50,
                         y: 100
@@ -51,7 +49,7 @@ export default function RoadmapLayout (props) {
                 id: node.id,
                 type: 'input',
                 myType: node.data.type,
-                roadmap: roadmap._links.self.href,
+                /*TODO roadmap: roadmap._links.self.href,*/
                 position: {
                     x: 100,
                     y: 100
@@ -148,8 +146,8 @@ export default function RoadmapLayout (props) {
     const createEdge = (parentId, childrenId) => {
         return ({
             id: parentId + '-' + childrenId,
-            from: parentId,
-            to: childrenId
+            source: parentId,
+            target: childrenId
         })
     }
 
@@ -158,11 +156,11 @@ export default function RoadmapLayout (props) {
     }
 
     const createPlusNode = (id, x, y) => {
-        return createNode(id, '+', 'PLUS', x+25, x+50)
+        return createNode(id, '+', 'PLUS', x+25, y+50)
     }
 
-    const createMaterialPlusNode = (id) => {
-        return createNode(id, 'Add Material', 'MATERIAL-PLUS', x+40, x+80)
+    const createMaterialPlusNode = (id, x, y) => {
+        return createNode(id, 'Add Material', 'MATERIAL-PLUS', x+40, y+80)
     }
 
     const createNode = (id, title, type, x, y) => {
@@ -190,13 +188,11 @@ export default function RoadmapLayout (props) {
 
     const loadRoadmapData = () => {
         if (props.roadmap != null) {
-            const e = loadEdges()
-            const n = loadNodes()
             const tempRoadmap = props.roadmap
             tempRoadmap.id = getIdFromHref(tempRoadmap._links.self.href)
             setRoadmap(tempRoadmap)
 
-            setElements(convertNodes(n).concat(convertEdges(e)))
+            setElements(convertNodes(loadNodes()).concat(convertEdges(loadEdges())))
         }
     }
 
@@ -252,15 +248,14 @@ export default function RoadmapLayout (props) {
                         //                 tempNodes = nodes.filter(node => node !== nodeToDelete)
                         //             })
                         //         }
-                    // Adds two nodes with plus symbols -add material and add node- as a temporary nodes
-                    tempElements = tempElements
-                        .concat(createPlusNode(newNodeId))
-                        .concat(createMaterialPlusNode(newMaterialId))
 
-                    // Adds an edge from the selected node to the new plus nodes
-                        //         tempEdges = tempEdges
-                        //             .concat(createEdge(selectedNode.id, newNodeId))
-                        //             .concat(createEdge(selectedNode.id, newMaterialId))
+                    tempElements = tempElements
+                        // Adds two nodes with plus symbols -add material and add node- as a temporary nodes
+                        .concat(createPlusNode(newNodeId, selectedNode.position.x, selectedNode.position.y))
+                        .concat(createMaterialPlusNode(newMaterialId, selectedNode.position.x, selectedNode.position.y))
+                        // Adds an edge from the selected node to the new plus nodes
+                        .concat(createEdge(selectedNode.id, newNodeId))
+                        .concat(createEdge(selectedNode.id, newMaterialId))
                         //
                         //         // Replace edge from selected node to the selected node'selectedNode children to plus node to selected node'selectedNode children
                         //         const edgesToDelete = findEdgesFromNode(selectedNode)
