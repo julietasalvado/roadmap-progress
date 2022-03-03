@@ -5,7 +5,7 @@ import BlockPickerMenu from "./BlockPickerMenu";
 import {translateXYToCanvasPosition} from "../api/TranslateXYToCanvasPosition";
 import client from "./../client";
 import {getIdFromHref} from "../utils/idUtils";
-import ReactFlow from 'react-flow-renderer';
+import ReactFlow, {removeElements} from 'react-flow-renderer';
 
 export default function RoadmapLayout (props) {
     const [nodes, setNodes] = useState([])
@@ -137,10 +137,6 @@ export default function RoadmapLayout (props) {
             })}))
     }
 
-    const findEdgesFromNode = (nodeId) => {
-        return edges != null && edges.filter(edge => edge.from === nodeId)
-    }
-
     const findEdgesToNode = (nodeId) => {
         return edges != null && edges.filter(edge => edge.to === nodeId)
     }
@@ -235,57 +231,36 @@ export default function RoadmapLayout (props) {
                     console.log('element ', selectedNode)
 
                     if (!selectedNode.id.endsWith('+')) {
-                        //     // Finds a temporary node (the plus node) to delete it
-                        //     const nodesToDelete = nodes.filter(node => node.data.type === "PLUS" || node.data.type === "MATERIAL-PLUS")
+                        // Finds a temporary node (the plus node) to delete it
+                        const nodesToDelete = elements.filter(node => node.nodeType === "PLUS" || node.nodeType === "MATERIAL-PLUS")
                         const newNodeId = selectedNode.id + '+'
                         const newMaterialId = selectedNode.id + 'M+'
-                        //
-                        //     // If not selecting the node twice
-                        //     if (nodesToDelete.length === 0 || nodesToDelete[0].id !== newNodeId || nodesToDelete[0].id !== newMaterialId) {
-                                 let tempElements = elements
-                        //
-                        //         if (nodesToDelete.length > 0) {
-                        //             nodesToDelete.map(nodeToDelete => {
-                        //                 // Creates a new edge in order to restore the old connection between the selected node and its old children
-                        //                 const plusNodeParentEdge = findEdgesToNode(nodeToDelete.id)
-                        //                 const plusNodeChildrenEdges = findEdgesFromNode(nodeToDelete.id)
-                        //                 // If not removing a leaf node
-                        //                 if (plusNodeChildrenEdges.length > 0)
-                        //                     tempEdges = tempEdges.concat(createEdge(plusNodeParentEdge[0].from, plusNodeChildrenEdges[0].to))
-                        //
-                        //                 // Deletes both edges in plus node
-                        //                 tempEdges = tempEdges.filter(edge => (edge !== plusNodeParentEdge[0]) && (plusNodeChildrenEdges.length === 0 || edge !== plusNodeChildrenEdges[0]))
-                        //
-                        //                 // Deletes the plus node & edge from plus node
-                        //                 tempNodes = nodes.filter(node => node !== nodeToDelete)
-                        //             })
-                        //         }
 
-                        tempElements = tempElements
-                            // Adds two nodes with plus symbols -add material and add node- as a temporary nodes
-                            .concat(createPlusNode(newNodeId, selectedNode.position.x, selectedNode.position.y))
-                            .concat(createMaterialPlusNode(newMaterialId, selectedNode.position.x, selectedNode.position.y))
-                            // Adds an edge from the selected node to the new plus nodes
-                            .concat(createEdge(selectedNode.id, newNodeId))
-                            .concat(createEdge(selectedNode.id, newMaterialId))
-                        //
-                        //         // Replace edge from selected node to the selected node'selectedNode children to plus node to selected node'selectedNode children
-                        //         const edgesToDelete = findEdgesFromNode(selectedNode)
-                        //         // If it isn't a leaf node
-                        //         if (edgesToDelete.length > 0) {
-                        //             tempEdges = tempEdges.concat(createEdge(newNodeId, edgesToDelete[0].to))
-                        //             tempEdges = tempEdges.filter(childrenEdge => childrenEdge !== edgesToDelete[0])
-                        //         }
-                        //
-                        // Save
-                        setElements(tempElements)
+                        // If not selecting the node twice
+                        if (nodesToDelete.length === 0 || nodesToDelete[0].id !== newNodeId || nodesToDelete[0].id !== newMaterialId) {
+                            let tempElements = elements
 
-                        //
-                        //         const tempRoadmap = roadmap
-                        //         tempRoadmap.nodes = nodes
-                        //         tempRoadmap.edges = edges
-                        //         setRoadmap(tempRoadmap);
-                        //     }
+                            if (nodesToDelete.length > 0) {
+                                // Deletes the plus node & edge from plus node
+                                tempElements = removeElements(nodesToDelete, elements)
+                            }
+
+                            tempElements = tempElements
+                                // Adds two nodes with plus symbols -add material and add node- as a temporary nodes
+                                .concat(createPlusNode(newNodeId, selectedNode.position.x, selectedNode.position.y))
+                                .concat(createMaterialPlusNode(newMaterialId, selectedNode.position.x, selectedNode.position.y))
+                                // Adds an edge from the selected node to the new plus nodes
+                                .concat(createEdge(selectedNode.id, newNodeId))
+                                .concat(createEdge(selectedNode.id, newMaterialId))
+
+                            // Save
+                            setElements(tempElements)
+
+                            //         const tempRoadmap = roadmap
+                            //         tempRoadmap.nodes = nodes
+                            //         tempRoadmap.edges = edges
+                            //         setRoadmap(tempRoadmap);
+                             }
                         } else {
                             console.log("is a plus node")
                         //     // Converts the x/y position to a Canvas position and apply some margin for the BlockPickerMenu
