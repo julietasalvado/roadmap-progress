@@ -4,7 +4,7 @@ import BlockPickerMenu from "./BlockPickerMenu";
 import {translateXYToCanvasPosition} from "../api/TranslateXYToCanvasPosition";
 import client from "./../client";
 import {getIdFromHref} from "../utils/idUtils";
-import ReactFlow, {getOutgoers, getIncomers, removeElements} from 'react-flow-renderer';
+import ReactFlow, {getOutgoers, getIncomers, removeElements, isNode} from 'react-flow-renderer';
 import PlusNode from "./nodes/PlusNode";
 
 export default function RoadmapLayout (props) {
@@ -31,17 +31,14 @@ export default function RoadmapLayout (props) {
 
             // Remove the plus node & edge
             const nodesToRemove = getOutgoers(parentNode, tempElements).filter(node => node.id.endsWith('+'))
+            console.log('nodesToRemove', nodesToRemove)
             tempElements = removeElements(nodesToRemove, tempElements)
 
             setElements(tempElements)
-
-            // Update roadmap element
-            const tempRoadmap = roadmap
-            tempRoadmap.elements = tempElements
-            setRoadmap(tempRoadmap);
+            console.log(elements)
 
             // Send them to the backend
-            //onUpdate()
+            onUpdate(tempElements)
 
             // Close block picker
             setBlockPickerMenu({
@@ -53,7 +50,31 @@ export default function RoadmapLayout (props) {
         }
     }
 
-/*    const onUpdate = () => {
+    const onUpdate = (updatedElements) => {
+        //separate nodes & edges
+        const nodes = updatedElements.filter(element => isNode(element)).map(node => { return {
+            nodeId: node.id,
+            x: node.position.x,
+            y: node.position.y,
+            height: 0,
+            width: 0,
+            title: node.data.label,
+            roadmap: roadmap._links.self.href,
+            type: node.data.nodeType,
+        }})
+
+        const edges = updatedElements.filter(element => !isNode(element)).map(edge => { return {
+            edgeId: edge.id,
+            edgeFrom: edge.source,
+            edgeTo: edge.target,
+            roadmap: roadmap._links.self.href,
+        }})
+
+        const tempRoadmap = roadmap
+        tempRoadmap.nodes = nodes
+        tempRoadmap.edges = edges
+        setRoadmap(tempRoadmap);
+
         client({
             method: 'PUT',
             path: roadmap._links.self.href,
@@ -62,9 +83,9 @@ export default function RoadmapLayout (props) {
                 'Content-Type': 'application/json'
             }
         }).done(response => {
-            console.log("Updated")
+            console.log("Updated", response)
         });
-    }*/
+    }
 
     const convertEdges = () => {
         return (props.roadmap.edges.map(edge => {
@@ -90,7 +111,6 @@ export default function RoadmapLayout (props) {
                     x: node.x,
                     y: node.y
                 },
-                // TODO roadmap: props.roadmap._links.self.href,
                 type: 'input',
             })}))
     }
@@ -148,7 +168,6 @@ export default function RoadmapLayout (props) {
 
             const tempRoadmap = props.roadmap
             tempRoadmap.id = getIdFromHref(tempRoadmap._links.self.href)
-            tempRoadmap.elements = elements;
             setRoadmap(tempRoadmap)
         }
     }
@@ -209,10 +228,6 @@ export default function RoadmapLayout (props) {
 
                             // Save
                             setElements(tempElements)
-
-                            const tempRoadmap = roadmap
-                            tempRoadmap.elements = elements;
-                            setRoadmap(tempRoadmap);
                         }} else {
                             // Converts the x/y position to a Canvas position and apply some margin for the BlockPickerMenu
                             // to display on the right bottom of the cursor
