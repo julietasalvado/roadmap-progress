@@ -3,9 +3,13 @@ import useDidMount from "../api/useDidMount";
 import BlockPickerMenu from "./BlockPickerMenu";
 import {translateXYToCanvasPosition} from "../api/TranslateXYToCanvasPosition";
 import client from "./../client";
-import {getIdFromHref} from "../utils/idUtils";
+import {getAvailableId, getIdFromHref} from "../utils/idUtils";
 import ReactFlow, {getOutgoers, getIncomers, removeElements, isNode} from 'react-flow-renderer';
 import PlusNode from "./nodes/PlusNode";
+
+const getNodes = (elements) => {
+    return elements.filter(element => isNode(element))
+}
 
 export default function RoadmapLayout (props) {
     const [roadmap, setRoadmap] = useState([])
@@ -23,7 +27,7 @@ export default function RoadmapLayout (props) {
             const parentNode = getIncomers(displayedFrom, elements)[0]
 
             // Create edge & node
-            const newNode = createNormalNode(elements.length, e.target.value)
+            const newNode = createNormalNode(getAvailableId(getNodes(elements)), e.target.value)
             const newEdge = createEdge(parentNode.id, newNode.id)
             let tempElements = elements
                 .concat(newNode)
@@ -52,7 +56,7 @@ export default function RoadmapLayout (props) {
 
     const onUpdate = (updatedElements) => {
         //separate nodes & edges
-        const nodes = updatedElements.filter(element => isNode(element)).map(node => { return {
+        const nodes = getNodes(updatedElements).map(node => { return {
             nodeId: node.id,
             x: node.position.x,
             y: node.position.y,
