@@ -50,12 +50,12 @@ export default function BlockPickerMenu(props) {
               `}
     >
         <div className={'blocks-picker'} >
-            {props.data.displayedFrom.nodeType === 'PLUS' && <Input
+            {props.data.isDisplayed && props.data.displayedFrom.data.nodeType === 'PLUS' && <Input
                 focus
                 placeholder='Node name...'
                 onKeyPress={(e) => props.onConfirmation(e, props.data.displayedFrom)}
             />}
-            {props.data.displayedFrom.nodeType !== 'PLUS' &&
+            {props.data.isDisplayed && props.data.displayedFrom.data.nodeType !== 'PLUS' &&
             <div>
                 <Button>
                 Book

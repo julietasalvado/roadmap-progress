@@ -20,14 +20,6 @@ export default function RoadmapLayout (props) {
     const onCreationConfirmation = (e, displayedFrom) => {
         // Send new node to the backend
         if (e.key === "Enter") {
-            // Close block picker
-            setBlockPickerMenu({
-                isDisplayed: false,
-                left: 0,
-                top: 0,
-                displayedFrom: {}
-            });
-
             const parentNode = getIncomers(displayedFrom, elements)[0]
 
             // Create edge & node
@@ -51,7 +43,15 @@ export default function RoadmapLayout (props) {
             setRoadmap(tempRoadmap);
 
             // Send them to the backend
-            //onUpdate()*/
+            //onUpdate()
+
+            // Close block picker
+            setBlockPickerMenu({
+                isDisplayed: false,
+                left: 0,
+                top: 0,
+                displayedFrom: {}
+            });
         }
     }
 
@@ -78,26 +78,15 @@ export default function RoadmapLayout (props) {
         }))
     }
 
-    const convertNodesFromUI = (node) => {
-        return {
-            id: node.id,
-            nodeType: node.type,
-            data: node.data,
-            position: node.position,
-            // TODO roadmap: props.roadmap._links.self.href,
-            type: node.type,
-        }
-    }
-
     const convertNodesFromDB = () => {
         return (props.roadmap.nodes.map(node => {
             return ({
                 id: node.id,
-                nodeType: node.nodeType,
                 data: {
                     label: (
                         node.title
                     ),
+                    nodeType: node.type
                 },
                 position: {
                     x: node.x,
@@ -122,7 +111,7 @@ export default function RoadmapLayout (props) {
     }
 
     const createPlusNode = (id, x, y) => {
-        return createNode(id, '', 'PLUS', x + 160, y - 30, {
+        return createNode(id, '+', 'PLUS', x + 160, y - 30, {
             background: '#f1e826',
             color: '#333',
             border: '3px solid ##f1e826',
@@ -131,7 +120,7 @@ export default function RoadmapLayout (props) {
     }
 
     const createMaterialPlusNode = (id, x, y) => {
-        return createNode(id, 'Add Material', 'MATERIAL-PLUS', x + 160, y + 30, {
+        return createNode(id, 'Add Material', 'MATERIAL_PLUS', x + 160, y + 30, {
             background: '#D6D5E6',
                 color: '#333',
                 border: '1px solid #222138',
@@ -142,9 +131,10 @@ export default function RoadmapLayout (props) {
     const createNode = (id, title, type, x, y, style) => {
         return ({
             id: id,
-            type: type,
+            type: 'input',
             data: {
-                label: title
+                label: title,
+                nodeType: type
             },
             position: {
                 x: x,
@@ -153,15 +143,6 @@ export default function RoadmapLayout (props) {
             style: style
         })
     }
-
-/*    const {selections, onClick} = useSelection({
-        nodes,
-        edges,
-        selections,
-        onSelection: (s) => {
-            console.log('Selecting Node', s);
-        }
-    });*/
 
     const loadRoadmapData = () => {
         if (props.roadmap != null) {
@@ -181,6 +162,7 @@ export default function RoadmapLayout (props) {
 
     const nodeTypes = {
         PLUS: PlusNode,
+        MATERIAL_PLUS: PlusNode
     };
 
     console.log(elements)
@@ -206,7 +188,7 @@ export default function RoadmapLayout (props) {
 
                     if (!selectedNode.id.endsWith('+')) {
                         // Finds a temporary node (the plus node) to delete it
-                        const nodesToDelete = elements.filter(node => node.nodeType === "PLUS" || node.nodeType === "MATERIAL-PLUS")
+                        const nodesToDelete = elements.filter(node => node.nodeType === "PLUS" || node.nodeType === "MATERIAL_PLUS")
                         const newNodeId = selectedNode.id + '+'
                         const newMaterialId = selectedNode.id + 'M+'
 
@@ -244,7 +226,7 @@ export default function RoadmapLayout (props) {
                                 // Depending on the position of the canvas, you might need to deduce from x/y some delta
                                 left: x,
                                 top: y,
-                                displayedFrom: convertNodesFromUI(selectedNode)
+                                displayedFrom: selectedNode
                             });
                         }
                 }}

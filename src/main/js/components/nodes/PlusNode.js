@@ -1,8 +1,9 @@
-import React, {memo, useState} from 'react';
-import {Icon} from "reaflow";
+import React, {memo} from 'react';
 import {Handle} from "react-flow-renderer";
+import {Icon} from "semantic-ui-react";
 
 export default memo(({ data, isConnectable }) => {
+    console.log('data', data)
     return (
         <>
             <Handle
@@ -13,7 +14,7 @@ export default memo(({ data, isConnectable }) => {
                 isConnectable={isConnectable}
             />
             <div>
-                <p>+</p>
+                <h1>{data.displayedFrom.data.label}</h1>
                 <Icon plus/>
             </div>
             <Handle
