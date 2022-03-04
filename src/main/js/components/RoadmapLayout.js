@@ -4,7 +4,7 @@ import BlockPickerMenu from "./BlockPickerMenu";
 import {translateXYToCanvasPosition} from "../api/TranslateXYToCanvasPosition";
 import client from "./../client";
 import {getIdFromHref} from "../utils/idUtils";
-import ReactFlow, {getConnectedEdges, getIncomers, removeElements} from 'react-flow-renderer';
+import ReactFlow, {getOutgoers, getIncomers, removeElements} from 'react-flow-renderer';
 import PlusNode from "./nodes/PlusNode";
 
 export default function RoadmapLayout (props) {
@@ -30,12 +30,10 @@ export default function RoadmapLayout (props) {
                 .concat(newEdge)
 
             // Remove the plus node & edge
-            //tempEdges = tempEdges.filter(edge => edge !== parentEdge[0])
-            //tempNodes = tempNodes.filter(node => node.id !== displayedFrom.id)
+            const nodesToRemove = getOutgoers(parentNode, tempElements).filter(node => node.id.endsWith('+'))
+            tempElements = removeElements(nodesToRemove, tempElements)
 
             setElements(tempElements)
-
-            console.log(tempElements)
 
             // Update roadmap element
             const tempRoadmap = roadmap
