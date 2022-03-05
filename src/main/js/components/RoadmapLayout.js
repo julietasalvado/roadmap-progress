@@ -40,6 +40,15 @@ export default function RoadmapLayout (props) {
     const onCreationConfirmation = (e, displayedFrom) => {
         // Send new node to the backend
         if (e.key === "Enter") {
+            // Close block picker
+            setBlockPickerMenu({
+                isDisplayed: false,
+                left: 0,
+                top: 0,
+                displayedFrom: {}
+            });
+
+
             const parentEdge = findEdgesToNode(displayedFrom.id);
 
             // Create edge & node
