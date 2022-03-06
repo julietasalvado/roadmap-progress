@@ -4,11 +4,15 @@ import BlockPickerMenu from "./BlockPickerMenu";
 import {translateXYToCanvasPosition} from "../api/TranslateXYToCanvasPosition";
 import client from "./../client";
 import {getAvailableId, getIdFromHref} from "../utils/idUtils";
-import ReactFlow, {getOutgoers, getIncomers, removeElements, isNode} from 'react-flow-renderer';
+import ReactFlow, {getOutgoers, getIncomers, removeElements, isNode, addEdge, isEdge} from 'react-flow-renderer';
 import PlusNode from "./nodes/PlusNode";
 
 const getNodes = (elements) => {
     return elements.filter(element => isNode(element))
+}
+
+const getEdges = (elements) => {
+    return elements.filter(element => isEdge(element))
 }
 
 export default function RoadmapLayout (props) {
@@ -22,24 +26,64 @@ export default function RoadmapLayout (props) {
     })
 
     const onCreationConfirmation = (e, displayedFrom) => {
-        // Send new node to the backend
+        // Sends new node to the backend
         if (e.key === "Enter") {
-            const parentNode = getIncomers(displayedFrom, elements)[0]
+            let parentNode = getIncomers(displayedFrom, elements)[0];
 
-            // Create edge & node
-            const newNode = createNormalNode(getAvailableId(getNodes(elements)), e.target.value)
-            const newEdge = createEdge(parentNode.id, newNode.id)
+            // if it is a main topic node
+            let nodeType = "SECONDARY_TOPIC";
+            let nodeId = getAvailableId(getNodes(elements));
+            let nodeX = 125, nodeY = 125;
+            if (parentNode.data.nodeType === 'START') {
+                nodeType = "MAIN_TOPIC";
+                nodeX = parentNode.position.x;
+                nodeY = parentNode.position.y + 100;
+            }
+
+            // Creates edge & node
+            const newNode = createNormalNode(nodeId, e.target.value, nodeType, nodeX, nodeY);
+            const newEdge = createEdge(parentNode.id, nodeId);
             let tempElements = elements
-                .concat(newNode)
-                .concat(newEdge)
+                .concat(newNode);
+            tempElements = addEdge(newEdge, tempElements);
 
-            // Remove the plus node & edge
+            // Removes the plus node & edge
             const nodesToRemove = getOutgoers(parentNode, tempElements).filter(node => node.id.endsWith('+'))
-            console.log('nodesToRemove', nodesToRemove)
             tempElements = removeElements(nodesToRemove, tempElements)
 
+            // Takes all nodes a position below
+            tempElements
+                .filter(element => isNode(element, tempElements))
+                .filter(node => node.position.y >= newNode.position.y)
+                .map(node => {
+                    node.position = {
+                        ...node.position,
+                        y: node.position.y + 100,
+                    };
+                } );
+
+            // Takes the old children one position below
+            if (parentNode.data.nodeType === 'START') {
+                const siblings = getOutgoers(parentNode, tempElements).filter(node => node !== newNode && node.data.nodeType === 'MAIN_TOPIC')
+
+                // Node reorganization for the first main_topic
+                if (siblings.length === 1) {
+                    let sibling = siblings[0];
+                    sibling.position = {
+                        ...sibling.position,
+                        y: sibling.position.y + 100,
+                    };
+
+                    // Removes edges between father and siblings and keeping the father for reuse
+                    const siblingEdge = getEdges(tempElements).filter(edge => edge.target === sibling.id)
+                    tempElements = removeElements(siblingEdge, tempElements);
+
+                    const newEdge = createEdge(newNode.id, sibling.id)
+                    tempElements = addEdge(newEdge, tempElements)
+                }
+            }
+
             setElements(tempElements)
-            console.log(elements)
 
             // Send them to the backend
             onUpdate(tempElements)
@@ -68,7 +112,7 @@ export default function RoadmapLayout (props) {
         }})
 
         const edges = updatedElements.filter(element => !isNode(element)).map(edge => { return {
-            edgeId: edge.id,
+            edgeId: (edge.id).toString(),
             edgeFrom: edge.source,
             edgeTo: edge.target,
             roadmap: roadmap._links.self.href,
@@ -82,7 +126,7 @@ export default function RoadmapLayout (props) {
         client({
             method: 'PUT',
             path: roadmap._links.self.href,
-            entity: roadmap,
+            entity: tempRoadmap,
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -94,7 +138,7 @@ export default function RoadmapLayout (props) {
     const convertEdges = () => {
         return (props.roadmap.edges.map(edge => {
             return ({
-                id: edge.id,
+                id: (edge.id).toString(),
                 source: edge.edgeFrom,
                 target: edge.edgeTo
             })
@@ -128,8 +172,8 @@ export default function RoadmapLayout (props) {
         })
     }
 
-    const createNormalNode = (id, title) => {
-        return createNode(id + '', title, 'MAIN_TOPIC', 125, 250)
+    const createNormalNode = (id, title, nodeType, x, y) => {
+        return createNode(id, title, nodeType, x, y)
     }
 
     const createPlusNode = (id, x, y) => {
@@ -225,10 +269,13 @@ export default function RoadmapLayout (props) {
                             tempElements = tempElements
                                 // Adds two nodes with plus symbols -add material and add node- as a temporary nodes
                                 .concat(createPlusNode(newNodeId, selectedNode.position.x, selectedNode.position.y))
-                                .concat(createMaterialPlusNode(newMaterialId, selectedNode.position.x, selectedNode.position.y))
+                                .concat(createMaterialPlusNode(newMaterialId, selectedNode.position.x, selectedNode.position.y));
                                 // Adds an edge from the selected node to the new plus nodes
-                                .concat(createEdge(selectedNode.id, newNodeId))
-                                .concat(createEdge(selectedNode.id, newMaterialId))
+                                //.concat(createEdge(selectedNode.id, newNodeId))
+                                //.concat(createEdge(selectedNode.id, newMaterialId))
+
+                            tempElements = addEdge(createEdge((selectedNode.id).toString(), newNodeId), tempElements);
+                            tempElements = addEdge(createEdge((selectedNode.id).toString(), newMaterialId), tempElements);
 
                             // Save
                             setElements(tempElements)

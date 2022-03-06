@@ -8,6 +8,7 @@ export const getAvailableId = (nodes) => {
     while (true) {
         const id = Math.floor(Math.random() * (max - min + 1)) + min;
         if (nodes.filter(node => node.id === id).length === 0)
-            return id;
+            // react-flow only accepts ids in string format
+            return (id).toString();
     }
 }

@@ -15,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import java.util.Objects;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -44,5 +45,18 @@ public class Node {
 
   public String getId() {
     return this.nodeId;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof Node)) return false;
+    Node node = (Node) o;
+    return getHeight() == node.getHeight() && getWidth() == node.getWidth() && getX() == node.getX() && getY() == node.getY() && getNodeId().equals(node.getNodeId()) && getTitle().equals(node.getTitle()) && getRoadmap().equals(node.getRoadmap()) && getType() == node.getType();
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(getNodeId(), getTitle(), getHeight(), getWidth(), getRoadmap(), getType(), getX(), getY());
   }
 }
