@@ -147,6 +147,14 @@ export default function RoadmapLayout (props) {
 
     const convertNodesFromDB = () => {
         return (props.roadmap.nodes.map(node => {
+            let style;
+            if (node.type === 'START') {
+                style = {
+                    background: '#7294d2',
+                    fontWeight: 'bold',
+                }
+            }
+
             return ({
                 id: node.id,
                 data: {
@@ -160,6 +168,7 @@ export default function RoadmapLayout (props) {
                     y: node.y
                 },
                 type: 'input',
+                style: style,
             })}))
     }
 
@@ -227,7 +236,8 @@ export default function RoadmapLayout (props) {
 
     const nodeTypes = {
         PLUS: PlusNode,
-        MATERIAL_PLUS: PlusNode
+        MATERIAL_PLUS: PlusNode,
+        START: PlusNode,
     };
 
     console.log(elements)
