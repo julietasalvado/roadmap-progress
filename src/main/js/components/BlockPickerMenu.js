@@ -2,7 +2,7 @@
 /** @jsx jsx */
 
 import React, {useEffect, useState} from "react";
-import {Input} from "semantic-ui-react";
+import {Button, Input} from "semantic-ui-react";
 import {css, jsx} from "@emotion/react";
 import useDidMount from "../api/useDidMount";
 
@@ -39,11 +39,24 @@ export default function BlockPickerMenu(props) {
               `}
     >
         <div className={'blocks-picker'} >
-            <Input
+            {props.data.displayedFrom.data.type === 'PLUS' && <Input
                 focus
                 placeholder='Node name...'
                 onKeyPress={(e) => props.onConfirmation(e, props.data.displayedFrom)}
-            />
+            />}
+            {props.data.displayedFrom.data.type !== 'PLUS' &&
+            <div>
+                <Button>
+                Book
+                </Button>
+                <Button>
+                Course
+                </Button>
+                <Button>
+                Article
+                </Button>
+            </div>
+            }
         </div>
     </div>);
 }

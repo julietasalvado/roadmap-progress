@@ -48,7 +48,6 @@ export default function RoadmapLayout (props) {
                 displayedFrom: {}
             });
 
-
             const parentEdge = findEdgesToNode(displayedFrom.id);
 
             // Create edge & node
@@ -132,7 +131,11 @@ export default function RoadmapLayout (props) {
     }
 
     const createPlusNode = (id) => {
-        return createNode(id, '+', 'PLUS', 25, 25)
+        return createNode(id, '+', 'PLUS', 25, 50)
+    }
+
+    const createMaterialPlusNode = (id) => {
+        return createNode(id, 'Add Material', 'MATERIAL-PLUS', 40, 80)
     }
 
     const createNode = (id, title, type, height, width) => {
@@ -199,33 +202,40 @@ export default function RoadmapLayout (props) {
                             onClick = {(event, selectedNode) => {
                                     if (!selectedNode.id.endsWith('+')) {
                                         // Finds a temporary node (the plus node) to delete it
-                                        const nodeToDelete = nodes.filter(node => node.data.type === "PLUS")
+                                        const nodesToDelete = nodes.filter(node => node.data.type === "PLUS" || node.data.type === "MATERIAL-PLUS")
                                         const newNodeId = selectedNode.id + '+'
+                                        const newMaterialId = selectedNode.id + 'M+'
 
                                         // If not selecting the node twice
-                                        if (nodeToDelete.length === 0 || nodeToDelete[0].id !== newNodeId) {
+                                        if (nodesToDelete.length === 0 || nodesToDelete[0].id !== newNodeId || nodesToDelete[0].id !== newMaterialId) {
                                             let tempNodes = nodes
                                             let tempEdges = edges
 
-                                            if (nodeToDelete.length > 0) {
-                                                // Creates a new edge in order to restore the old connection between the selected node and its old children
-                                                const plusNodeParentEdge = findEdgesToNode(nodeToDelete[0].id)
-                                                const plusNodeChildrenEdges = findEdgesFromNode(nodeToDelete[0].id)
-                                                // If not removing a leaf node
-                                                if (plusNodeChildrenEdges.length > 0)
-                                                    tempEdges = tempEdges.concat(createEdge(plusNodeParentEdge[0].from, plusNodeChildrenEdges[0].to))
+                                            if (nodesToDelete.length > 0) {
+                                                nodesToDelete.map(nodeToDelete => {
+                                                    // Creates a new edge in order to restore the old connection between the selected node and its old children
+                                                    const plusNodeParentEdge = findEdgesToNode(nodeToDelete.id)
+                                                    const plusNodeChildrenEdges = findEdgesFromNode(nodeToDelete.id)
+                                                    // If not removing a leaf node
+                                                    if (plusNodeChildrenEdges.length > 0)
+                                                        tempEdges = tempEdges.concat(createEdge(plusNodeParentEdge[0].from, plusNodeChildrenEdges[0].to))
 
-                                                // Deletes both edges in plus node
-                                                tempEdges = tempEdges.filter(edge => (edge !== plusNodeParentEdge[0]) && (plusNodeChildrenEdges.length === 0 || edge !== plusNodeChildrenEdges[0]))
+                                                    // Deletes both edges in plus node
+                                                    tempEdges = tempEdges.filter(edge => (edge !== plusNodeParentEdge[0]) && (plusNodeChildrenEdges.length === 0 || edge !== plusNodeChildrenEdges[0]))
 
-                                                // Deletes the plus node & edge from plus node
-                                                tempNodes = nodes.filter(node => node !== nodeToDelete[0])
+                                                    // Deletes the plus node & edge from plus node
+                                                    tempNodes = nodes.filter(node => node !== nodeToDelete)
+                                                })
                                             }
-                                            // Adds a button with a plus symbol as a temporary node
-                                            tempNodes = tempNodes.concat(createPlusNode(newNodeId))
+                                            // Adds two nodes with plus symbols -add material and add node- as a temporary nodes
+                                            tempNodes = tempNodes
+                                                .concat(createPlusNode(newNodeId))
+                                                .concat(createMaterialPlusNode(newMaterialId))
 
-                                            // Adds an edge from the selected node to the new plus node
-                                            tempEdges = tempEdges.concat(createEdge(selectedNode.id, newNodeId))
+                                            // Adds an edge from the selected node to the new plus nodes
+                                            tempEdges = tempEdges
+                                                .concat(createEdge(selectedNode.id, newNodeId))
+                                                .concat(createEdge(selectedNode.id, newMaterialId))
 
                                             // Replace edge from selected node to the selected node'selectedNode children to plus node to selected node'selectedNode children
                                             const edgesToDelete = findEdgesFromNode(selectedNode)
@@ -276,9 +286,9 @@ export default function RoadmapLayout (props) {
                                         <h3 style={{color: 'white'}}>{event.node.data.title}</h3>
                                     </div>
                                     }
-                                    {event.node.data.type === "PLUS" &&
+                                    {(event.node.data.type === "PLUS" || event.node.data.type === "MATERIAL-PLUS") &&
                                         <div style={{textAlign: 'center', backgroundColor: "#8b9395", border: "none"}}>
-                                        <h3 style={{color: 'dark grey'}}>{event.node.data.title}</h3>
+                                        <h5 style={{color: 'dark grey'}}>{event.node.data.title}</h5>
                                         </div>
                                     }
                                     }
