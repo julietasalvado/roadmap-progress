@@ -7,27 +7,30 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Entity
 @Getter
 @Setter
-@Entity
-@Table(name = "topics")
-public class Topic {
+@Table(name = "item_modules")
+public class Module {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  private Long id;
+  private Long moduleId;
 
   private String title;
+  private boolean completed = false;
 
-  @ManyToMany(mappedBy = "topics")
-  List<Item> items;
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @JoinColumn(name = "item_id", nullable = false)
+  private Item item;
 }

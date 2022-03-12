@@ -15,7 +15,7 @@
  */
 package com.julietasalvado.roadmapprogress.repository;
 
-import com.julietasalvado.roadmapprogress.Item;
+import com.julietasalvado.roadmapprogress.model.Item;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
