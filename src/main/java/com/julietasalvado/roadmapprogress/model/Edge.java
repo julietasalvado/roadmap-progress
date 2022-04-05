@@ -1,6 +1,5 @@
 package com.julietasalvado.roadmapprogress.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import java.util.Objects;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -33,5 +33,18 @@ public class Edge {
 
   public String getId() {
     return this.edgeId;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof Edge)) return false;
+    Edge edge = (Edge) o;
+    return getEdgeId().equals(edge.getEdgeId()) && getEdgeFrom().equals(edge.getEdgeFrom()) && getEdgeTo().equals(edge.getEdgeTo()) && getRoadmap().equals(edge.getRoadmap());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(getEdgeId(), getEdgeFrom(), getEdgeTo(), getRoadmap());
   }
 }
